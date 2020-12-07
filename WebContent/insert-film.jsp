@@ -28,7 +28,7 @@
 <h1>Insert a film</h1>
 
 
-     <form method="POST" action="./insert-film">
+     <form id='insertFilmForm' onsubmit="insertFilm()">
          <div class="form-group">
              <label for="film_title">Title</label> <input
                  type="text" class="form-control" id="film_title" name="title"
@@ -58,14 +58,11 @@
                  placeholder="Amazing movie!" required>
          </div>
          
-         <button type="submit" class="btn btn-primary btn-lg btn-block">Finish inserting movie data
-         </button>
+          <input type="submit" class="btn btn-primary btn-lg btn-block" value="Finish inserting movie data">         
          <br>
-
-
      </form>
-                    
-                    </div>
+                   
+</div>
 
 </body>
 </html>

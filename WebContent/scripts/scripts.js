@@ -21,7 +21,7 @@ function filmSearchHandler(searchOptionType, searchTerm, searchFieldDataFormat, 
         if (searchOption == 'film_title') {
             requestAddress = 'get-films-by-title';
         } else if (searchOption == 'any_field') {
-            requestAddress = 'get-films-by-any-term';
+            requestAddress = '§-films-by-any-term';
         } else if (searchOption == 'film_id') {
             requestAddress = 'get-film-by-id';
         }
@@ -63,16 +63,43 @@ function editFilm(buttonId, buttonValue) {
     console.log(filmButtonValue);
 }
 
+function insertFilm() {
+
+    var elements = document.getElementById("insertFilmForm").elements;
+    var filmAttributes ={};
+    for(var i = 0 ; i < elements.length ; i++){
+        var item = elements.item(i);
+        filmAttributes[item.name] = item.value;
+    }
+
+    console.log(filmAttributes);
+
+    $.post({
+        url: 'insert-film',
+        data: filmAttributes,
+        function(response) {
+            alert(response);
+            location.reload();
+        }
+    })
+
+}
+
 function deleteFilm(filmId) {
     var filmDeleteConfirmed = confirm('Are you sure you want to delete movie ' + filmId + '?');
 
     if (filmDeleteConfirmed) {
-        $.post('delete-film', {
-            film_id: filmId
-        }, function(data) {
-            location.reload();
-            alert('Film with ID ' + filmId + ' is deleted successfully. The page will refresh with the update.');
-        })
+        $.ajax({  
+            url: 'delete-film?filmId=' + filmId,  
+            type: 'DELETE',
+            success: function (data) {  
+                location.reload();
+                alert(data); 
+            },  
+            error: function (data) {  
+                alert(data); 
+            }  
+        });  
     }
 }
 
@@ -154,7 +181,7 @@ function getTableBody(tableData) {
           filmId = rowData[0];
           }
         body += "<td><a class='btn btn-md btn-warning btn-block' onclick='editFilm(id, name)' name=" + filmId + " id='editFilmButton'><i class='fas fa-edit'></i></a>" +
-            "<button type='submit' class='btn btn-md btn-danger btn-block' onclick='deleteFilm(name)' name=" + filmId + "><i class='far fa-trash-alt'/></button></td>"
+            "<button type='submit' class='btn btn-md btn-danger btn-block' id='deleteFilmButton' onclick='deleteFilm(value)' name='filmId' value=" + filmId + "><i class='far fa-trash-alt'/></button></td>"
         body += "</tr>\n";
     }
     return (body);
