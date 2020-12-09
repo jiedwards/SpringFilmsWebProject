@@ -13,7 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import coreservlets.dao.FilmDAO;
 import coreservlets.model.Film;
-import coreservlets.utils.DataUtils;
+import utils.DataUtils;
+import utils.FilmDatabaseUtils;
 
 /**
  * Servlet implementation class GetFilmByIdServlet
@@ -27,6 +28,7 @@ public class GetFilmByIdServlet extends HttpServlet {
 	FilmDAO filmDAO = new FilmDAO();
     String webAddress;
     DataUtils dataUtils = new DataUtils();
+    FilmDatabaseUtils filmDbUtils = new FilmDatabaseUtils();
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -60,7 +62,7 @@ public class GetFilmByIdServlet extends HttpServlet {
 	private void filmIdDatabaseRequest(HttpServletRequest request, HttpServletResponse response, String filmId) throws ServletException, IOException {
         
         List<Film> allFilms = new ArrayList<>();
-    	Film film = filmDAO.getFilmByID(Integer.parseInt(filmId));
+    	Film film = filmDbUtils.getFilmById(Integer.parseInt(filmId));
     	System.out.println(film);
 
         if (film == null) {

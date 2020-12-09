@@ -1,11 +1,19 @@
 package coreservlets.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 @XmlRootElement(name = "customer")
-@XmlType(propOrder = { "id", "title", "year", "director", "stars", "review" } , factoryMethod="createInstanceJAXB")
+@XmlType(propOrder = { "id", "title", "year", "director", "stars", "review" })
+@Entity
+@Table(name="films")
 public class Film {
    public Film(int id, String title, int year, String director, String stars,
                String review) {
@@ -18,17 +26,23 @@ public class Film {
 		this.review = review;
 	}
    
-   int id;
-   String title;
-   int year;
-   String director;
-   String stars;
-   String review;
-   
-   //satisfies JAXB no-arg constructor requirement, will never be invoked
-   private static Film createInstanceJAXB() { 
-       return null;  
+   private Film() {
    }
+   
+   @Id
+   @GeneratedValue(strategy = GenerationType.AUTO)
+   @Column(name="id")
+   int id;
+   @Column(name="title")
+   String title;
+   @Column(name="year")
+   int year;
+   @Column(name="director")
+   String director;
+   @Column(name="stars")
+   String stars;
+   @Column(name="review")
+   String review;
 
 public int getId() {
 	return id;

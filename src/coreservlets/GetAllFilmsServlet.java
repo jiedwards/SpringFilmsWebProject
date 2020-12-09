@@ -14,7 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import coreservlets.dao.FilmDAO;
 import coreservlets.model.Film;
-import coreservlets.utils.DataUtils;
+import utils.DataUtils;
+import utils.FilmDatabaseUtils;
 
 /**
  * Servlet implementation class GetFilmsServlet
@@ -27,6 +28,7 @@ import coreservlets.utils.DataUtils;
 public class GetAllFilmsServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     FilmDAO filmDAO = new FilmDAO();
+    FilmDatabaseUtils filmDbUtils = new FilmDatabaseUtils();
     String webAddress;
     DataUtils dataUtils = new DataUtils();
 
@@ -38,7 +40,7 @@ public class GetAllFilmsServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-        List<Film> allFilms = filmDAO.getAllFilms();
+        List<Film> allFilms = filmDbUtils.getAllFilms();
 
         if (allFilms.isEmpty()) {
         	dataUtils.noResultsFoundInDatabase(request, response, "due to films database being empty/disconnected.");

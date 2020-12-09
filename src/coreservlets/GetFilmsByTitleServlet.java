@@ -9,9 +9,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import coreservlets.utils.DataUtils;
+
 import coreservlets.dao.FilmDAO;
 import coreservlets.model.Film;
+import utils.DataUtils;
 
 /**
  * Servlet implementation class GetFilmsByTitle

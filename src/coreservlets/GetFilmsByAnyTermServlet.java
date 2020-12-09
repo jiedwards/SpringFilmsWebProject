@@ -9,9 +9,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import coreservlets.utils.DataUtils;
+
 import coreservlets.dao.FilmDAO;
 import coreservlets.model.Film;
+import utils.DataUtils;
+import utils.FilmDatabaseUtils;
 
 /**
  * Servlet implementation class GetFilmsByTitle
@@ -22,9 +24,9 @@ import coreservlets.model.Film;
 	)
 public class GetFilmsByAnyTermServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	FilmDAO filmDAO = new FilmDAO();
     String webAddress;
     DataUtils dataUtils = new DataUtils();
+    FilmDatabaseUtils filmDbUtils = new FilmDatabaseUtils();
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -57,7 +59,9 @@ public class GetFilmsByAnyTermServlet extends HttpServlet {
 	}
 	
 	private void filmsByAnySearchTermDatabaseRequest(HttpServletRequest request, HttpServletResponse response, String searchTerm) throws ServletException, IOException {
-        List<Film> allFilmsSearchedByTerm = filmDAO.getFilmsByAnyTerm(searchTerm);
+        System.out.println(searchTerm);
+		
+		List<Film> allFilmsSearchedByTerm = filmDbUtils.getFilmsByAnyTerm(searchTerm);
 
         if (allFilmsSearchedByTerm.isEmpty()) {
         	dataUtils.noResultsFoundInDatabase(request, response, "due to no data being found by the search term.");

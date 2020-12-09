@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(namespace = "coreservlets")
-@XmlType(factoryMethod="createInstanceJAXB")
 public class Films {
 	
 	@XmlElementWrapper(name = "filmList")
@@ -19,10 +18,9 @@ public class Films {
     @XmlElement(name = "film")
 	private List<Film> filmList;
 	
-//	satisfies JAXB no-arg constructor requirement, will never be invoked
-	private static Films createInstanceJAXB() { 
-	      return null;  
-		}
+	public Films() {
+		
+	}
 	
 	public List<Film> getFilmList() {
 		return filmList;
@@ -31,8 +29,4 @@ public class Films {
 	public void setFilmList(List<Film> filmList) {
 		this.filmList = filmList;
 	}
-
-
-	
-
 }
