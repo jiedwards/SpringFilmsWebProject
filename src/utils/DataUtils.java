@@ -24,14 +24,14 @@ import coreservlets.model.Films;
 
 public class DataUtils {
     
-    public static void sendDataToWebpage(HttpServletRequest request, HttpServletResponse response, List<Film> films) throws ServletException, IOException {
+	public static void sendDataToWebpage(HttpServletRequest request, HttpServletResponse response, List<Film> films) throws ServletException, IOException {
     	response.setHeader("Cache-control", "no-cache");
         response.setHeader("Pragma", "no-cache");
     	
         String dataFormat = request.getParameter("dataFormat");
         
         if (dataFormat == null) {
-        	dataFormat = "application/json";
+        	dataFormat = "json";
         }
 
         String filmResultOutput = "";
@@ -50,10 +50,7 @@ public class DataUtils {
         }
         
         request.setAttribute("films", filmResultOutput);
-        
-        System.out.println(filmResultOutput);
-        
-        //delete the string below and use outputPage path once method is working.
+                
         RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/formatted-films.jsp");        															
         dispatcher.include(request, response);
     }
@@ -131,7 +128,11 @@ public class DataUtils {
 		//Convert data into Map for simpler and more efficient (O(1)) access.
 		HashMap<String, String> filmMap = new Gson().fromJson(jsonRequestData, HashMap.class);
 	
-		int filmId = Integer.parseInt(filmMap.get("film_id"));
+		int filmId = 999;
+		// This class is used for both update and insert film, however insert does not supply an id and thus one must be supplied.
+		if ((filmMap.get("film_id")) != null) {
+			filmId = Integer.parseInt(filmMap.get("film_id"));
+		};
 		String filmTitle = filmMap.get("title");
 		String filmDirector = filmMap.get("director");
 		int filmYear = Integer.parseInt(filmMap.get("year"));

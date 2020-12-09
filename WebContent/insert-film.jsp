@@ -27,7 +27,7 @@
 
 <h1>Insert a film</h1>
 
-     <form id='insertFilmForm' onsubmit="insertFilm()">
+     <form id='insertFilmForm' onsubmit="insertFilm(); return false">
          <div class="form-group">
              <label for="film_title">Title</label> <input
                  type="text" class="form-control" id="film_title" name="title"

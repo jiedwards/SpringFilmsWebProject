@@ -38,14 +38,17 @@ public class UpdateFilmServlet extends HttpServlet {
 		int filmId = updatedFilm.getId();
 				
 		try {
+	        System.out.println("--------------------");
 			System.out.println("Request recieved to update film with ID: " + filmId);
 			boolean filmUpdated = filmDbUtils.updateFilm(updatedFilm);
 			if (filmUpdated) {
 				System.out.println("Successfully updated movie with ID: " + filmId);
-				response.getWriter().write("Successfully update movie with ID: " + filmId);
+		        System.out.println("--------------------");
+				response.getWriter().write("Successfully updated movie with ID: " + filmId);
 			}
 		} catch (HibernateException e) {
 			response.getWriter().write("Failed to update movie with ID: " + filmId + ". Due to: " + e.toString());
+	        System.out.println("--------------------");
 			e.printStackTrace();
 		}
 

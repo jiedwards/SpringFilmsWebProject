@@ -7,6 +7,27 @@ $(document).keypress(
     }
 });
 
+$(document).on('click', '#success', function(e) {
+			swal(
+				'Success',
+				'You clicked the <b style="color:green;">Success</b> button!',
+				'success'
+			)
+        });
+
+function successfulAlertBox(message) {
+    swal({
+            title: message, 
+            type: "success",
+            text: "This will refresh the page and show the changes.",
+            confirmButtonText: "Great! Close this dialog.",
+        }).then((result) => {
+        location.reload();
+        });
+}
+
+        
+        
 function filmSearchHandler(searchOptionType, searchTerm, searchFieldDataFormat, resultRegion) {
 
     var searchOption = document.getElementById(searchOptionType).value;
@@ -91,7 +112,7 @@ function updateFilm() {
             data: JSON.stringify(filmAttributes),
             contentType: 'application/json',
             success: function (data) { 
-                alert(data); 
+                successfulAlertBox(data); 
             },  
             error: function (data) {  
                 alert(data); 
@@ -120,12 +141,15 @@ function insertFilm() {
         data: JSON.stringify(filmAttributes),
 		contentType: dataType,
         function(response) {
-            alert(response);
-            location.reload();
+            console.log('hit');
+            successfulAlertBox(response);
         }
     })
 
 }
+
+
+
 
 function deleteFilm(filmId) {
     var filmDeleteConfirmed = confirm('Are you sure you want to delete movie ' + filmId + '?');
@@ -135,8 +159,9 @@ function deleteFilm(filmId) {
             url: 'delete-film?filmId=' + filmId,  
             type: 'DELETE',
             success: function (data) {  
-                location.reload();
-                alert(data); 
+                successfulAlertBox(data);
+                // alert(data); 
+                
             },  
             error: function (data) {  
                 alert(data); 
@@ -167,6 +192,8 @@ function parseStringAPIResponse(data, resultRegion) {
 }
 
 function parseJsonAPIResponse(rowData, resultRegion) {
+    console.log('here');
+    $("#errorAlert").show();
     generateTable(rowData, resultRegion);
 }
 

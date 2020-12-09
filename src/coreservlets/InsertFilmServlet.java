@@ -48,6 +48,7 @@ public class InsertFilmServlet extends HttpServlet {
 		FilmDAO filmDAO = new FilmDAO();
 		Film film = null;
 		
+        System.out.println("--------------------");
 		if ("application/json".equals(request.getContentType())) {
 			System.out.println("Request recieved to update data in JSON.");
 			film = DataUtils.parseJSONClientFilmData(request);
@@ -62,6 +63,8 @@ public class InsertFilmServlet extends HttpServlet {
 				//Concat is used to add the film title on the end of the string as it will throw a null pointer if empty.
 				System.out.println("Successfully inserted movie: ".concat(film.getTitle()));
 				response.getWriter().write("Successfully inserted movie: ".concat(film.getTitle()));
+		        System.out.println("--------------------");
+
 			}
 		} catch (HibernateException e) {
 			response.getWriter().write("Failed to insert movie due to: " + e.toString());

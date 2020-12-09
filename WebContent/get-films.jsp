@@ -7,18 +7,20 @@
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
 	integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
 	crossorigin="anonymous">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="././css/style.css">
 <link rel="stylesheet"
 	href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
 	integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
 	crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
 <script
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-<script src="./scripts/scripts.js" type="text/javascript"></script>
+<script src="././scripts/scripts.js" type="text/javascript"></script>
 
 <title>All Movies</title>
 </head>
@@ -31,24 +33,24 @@
 		<div class="container"></div>
 		<h1>All Movies</h1>
 
-		<p>${films}</p>
-
 		<div class="image">
-			<a href="./"> <img src="./images/movie-reel.jpg" alt="Movie Reel"
+			<a href="./"> <img src="././images/movie-reel.jpg" alt="Movie Reel"
 				height="25%" width="25%">
 			</a>
 		</div>
 
 	</div>
-
+	
+		<button id="success">Success</button>
+		
+		<button onclick="alertBox()" id="link">Redirect to Utopian</button>
 
 	<div class="container-fluid mb-2 bg-light text-dark">
 
 		<form method="GET" action="#">
 
 			<div class="container mb-2 bg-light text-dark">
-				<h5>Search Movie by</h5>
-				<label class="options" for="options"> </label> <select
+				<label for="searchOptionType"> Search Movie by </label> <select
 					class="custom-select mr-sm-2" id="searchOptionType">
 					<option value="any_field" selected>Any field</option>
 
@@ -82,8 +84,7 @@
 
 		<br> <br>
 	</div>
-
-
+	
 	<div class="container-fluid">
 		<table id="moviesTable"
 			class="table table-hover .table-responsive table-sm mb-2">
@@ -109,7 +110,7 @@
 					<h1>Update a Vehicle</h1>
 
 
-					<form action="#" id='updateFilmForm' onsubmit='updateFilm()'>
+					<form action="#" id='updateFilmForm' onsubmit='updateFilm();return false'>
 					
 						<div class="form-group">
 							<label for="film_id">Film ID</label> <input type="text"
