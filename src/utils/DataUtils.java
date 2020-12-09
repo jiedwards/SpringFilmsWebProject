@@ -1,8 +1,11 @@
-package coreservlets.utils;
+package utils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -28,17 +31,17 @@ public class DataUtils {
         String dataFormat = request.getParameter("dataFormat");
         
         if (dataFormat == null) {
-        	dataFormat = "json";
+        	dataFormat = "application/json";
         }
 
         String filmResultOutput = "";
 
-        if ("xml".equals(dataFormat)) {   
-            response.setContentType("text/xml");
+        if ("text/xml".equals(dataFormat)) {   
+            response.setContentType(dataFormat);
             filmResultOutput = convertJavaPOJOToXML(films);
         }
-        else if ("string".equals(dataFormat)) {
-            response.setContentType("text/plain");
+        else if ("text/plain".equals(dataFormat)) {
+            response.setContentType(dataFormat);
             filmResultOutput = convertJavaPOJOToString(films);
         }
         else {
@@ -59,14 +62,14 @@ public class DataUtils {
         String errorMessage = "No data found " + errorReason;
         String dataFormat = request.getParameter("dataFormat");
 
-        if (dataFormat.equals("xml")) {   
-            response.setContentType("text/xml");
+        if ("text/xml".equals(dataFormat)) {   
+            response.setContentType(dataFormat);
         }
-        else if (dataFormat.equals("string")) {
-            response.setContentType("text/plain");
+        else if ("text/plain".equals(dataFormat)) {
+            response.setContentType(dataFormat);
         }
         else {
-            response.setContentType("application/json");
+            response.setContentType(dataFormat);
         }
         
     	String filePath = "/Users/jacobedwards/Desktop/Academic/Portfolio_ /Final Year/Enterprise Programming/eclipse-workspace/DynamicWebProjectMySQLFilmsEclipse/WebContent/WEB-INF/results/no-data-found.jsp";
@@ -116,4 +119,25 @@ public class DataUtils {
 		return outputString;
 	}
 
+	public static Film parseJSONClientFilmData(HttpServletRequest request) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+		
+		String jsonRequestData = "";
+		
+		if(br != null){
+			jsonRequestData = br.readLine();
+		}
+				
+		//Convert data into Map for simpler and more efficient (O(1)) access.
+		HashMap<String, String> filmMap = new Gson().fromJson(jsonRequestData, HashMap.class);
+	
+		int filmId = Integer.parseInt(filmMap.get("film_id"));
+		String filmTitle = filmMap.get("title");
+		String filmDirector = filmMap.get("director");
+		int filmYear = Integer.parseInt(filmMap.get("year"));
+		String filmStars = filmMap.get("stars");
+		String filmReview = filmMap.get("review");
+		
+		return new Film(filmId, filmTitle, filmYear, filmDirector, filmStars, filmReview);
+	}
 }

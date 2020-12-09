@@ -1,7 +1,9 @@
 package coreservlets;
 
+import java.io.BufferedReader;
 import java.io.Console;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -12,11 +14,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.HibernateException;
+
 import com.google.gson.Gson;
 
 import coreservlets.dao.FilmDAO;
 import coreservlets.model.Film;
-import coreservlets.utils.DataUtils;
+import utils.DataUtils;
+import utils.FilmDatabaseUtils;
 
 /**
  * Servlet implementation class InsertFilmServlet
@@ -26,7 +31,7 @@ import coreservlets.utils.DataUtils;
 	    urlPatterns = {"/insert-film"})
 public class InsertFilmServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    DataUtils dataUtils = new DataUtils();
+    FilmDatabaseUtils filmDatabaseUtils = new FilmDatabaseUtils();
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -37,55 +42,36 @@ public class InsertFilmServlet extends HttpServlet {
     }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-	}
-
-	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
 		FilmDAO filmDAO = new FilmDAO();
-
-
-//		String jsonRequestData = request.getParameter("");
-//		HashMap<String, String> filmMap = new Gson().fromJson(jsonRequestData, HashMap.class);
-//		System.out.println(jsonRequestData);
-//		
-//		System.out.println(filmMap);
-//	
-//		String filmTitle = filmMap.get("title");
-//		String filmDirector = filmMap.get("director");
-//
-//		System.out.println(request.getParameter("title"));
-//		System.out.println(request.getParameter("director"));
-
-		String filmTitle = (String) request.getParameter("title");
-		int filmYear = Integer.parseInt(request.getParameter("year"));
-		String filmDirector = (String) request.getParameter("director");
-		String filmStars = (String) request.getParameter("stars");
-		String filmReview = request.getParameter("review");
+		Film film = null;
 		
+		if ("application/json".equals(request.getContentType())) {
+			System.out.println("Request recieved to update data in JSON.");
+			film = DataUtils.parseJSONClientFilmData(request);
+		} else if ("text/xml".equals(request.getContentType())) {
+			System.out.println("Request recieved to update data in XML.");
+			film = parseXMLFilmData(request);
+		}
 		
-		Film film = new Film(999, filmTitle, filmYear, filmDirector, filmStars, filmReview);
-		System.out.println(film);
 		try {
-			System.out.println("pre film insert");
-			boolean filmInserted = filmDAO.insertFilm(film);
-			System.out.println("film inserted");
+			boolean filmInserted = filmDatabaseUtils.insertFilm(film);
 			if (filmInserted) {
-				response.getWriter().write("Success inserted movie: " + filmTitle);
+				//Concat is used to add the film title on the end of the string as it will throw a null pointer if empty.
+				System.out.println("Successfully inserted movie: ".concat(film.getTitle()));
+				response.getWriter().write("Successfully inserted movie: ".concat(film.getTitle()));
 			}
-		} catch (SQLException e) {
+		} catch (HibernateException e) {
 			response.getWriter().write("Failed to insert movie due to: " + e.toString());
 			e.printStackTrace();
-
 		}
+	}
+	
+	
+	private Film parseXMLFilmData(HttpServletRequest request) throws IOException {
+		return null;
 	}
 
 }

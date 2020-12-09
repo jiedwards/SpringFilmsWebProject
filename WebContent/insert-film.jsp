@@ -27,7 +27,6 @@
 
 <h1>Insert a film</h1>
 
-
      <form id='insertFilmForm' onsubmit="insertFilm()">
          <div class="form-group">
              <label for="film_title">Title</label> <input
@@ -37,7 +36,7 @@
 
          <div class="form-group">
              <label for="film_year">Year</label> <input
-                 type="text" class="form-control" min=1900 id="film_year" name="year"
+                 type="number" class="form-control" min=1800 max=2020 id="film_year" name="year"
                  placeholder="2001" required>
          </div>
          <div class="form-group">
@@ -58,7 +57,16 @@
                  placeholder="Amazing movie!" required>
          </div>
          
-          <input type="submit" class="btn btn-primary btn-lg btn-block" value="Finish inserting movie data">         
+          	<div class="form-group">
+          	 <label for="insertFilmDataFormat">in</label>
+            <select class="custom-select mr-sm-1" id="insertFilmDataFormat">
+            <option selected value="application/json">JSON format</option>
+            <option value="text/xml">XML format</option>
+            </select>
+            </div>
+          <input type="submit" class="btn btn-primary btn-lg btn-block" value="Finish inserting movie data">    
+          
+          <a href="/DynamicWebProjectMySQLFilmsEclipse" class="btn btn-success btn-lg btn-block">Return to all Films page</a>   
          <br>
      </form>
                    
