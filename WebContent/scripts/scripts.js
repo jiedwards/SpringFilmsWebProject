@@ -21,7 +21,7 @@ function filmSearchHandler(searchOptionType, searchTerm, searchFieldDataFormat, 
         if (searchOption == 'film_title') {
             requestAddress = 'get-films-by-title';
         } else if (searchOption == 'any_field') {
-            requestAddress = '§-films-by-any-term';
+            requestAddress = 'get-films-by-any-term';
         } else if (searchOption == 'film_id') {
             requestAddress = 'get-film-by-id';
         }
@@ -40,33 +40,72 @@ function getByFieldRequestWrapper(requestAddress, searchOption, searchTerm, data
     getRequestHandler(address, dataFormat, resultRegion);
 }
 
-function getRequestHandler(address, dataFormat, resultRegion) {
-    if (dataFormat == 'xml') {
+function getRequestHandler(address, dataType, resultRegion) {
+    if (dataType == 'text/xml') {
         $.get(address, function(data) {
             parseXmlAPIResponse(data, resultRegion);
         })
-    } else if (dataFormat == 'string') {
+    } else if (dataType == 'text/plain') {
         $.get(address, function(data) {
             parseStringAPIResponse(data, resultRegion);
         })
-    } else if (dataFormat == 'json') {
+    } else if (dataType == 'application/json') {
         $.get(address, function(data) {
             parseJsonAPIResponse(data, resultRegion);
         })
     }
 }
 
-function editFilm(buttonId, buttonValue) {
-    console.log(name);
+function editFilm(filmId) {
+    var address = "get-film-by-id?film_id=" + filmId;
 
-    $.get('edit-film')
-    console.log(filmButtonValue);
+    //Get by ID request using Fetch, a new JS request.
+    fetch(address)
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('update_film_id').value = data[0].id;
+        document.getElementById('update_film_title').value = data[0].title;
+        document.getElementById('update_film_director').value = data[0].director;
+        document.getElementById('update_film_year').value = data[0].year;
+        document.getElementById('update_film_stars').value = data[0].stars;
+        document.getElementById('update_film_review').value = data[0].review;
+    });
+}
+
+function updateFilm() {
+
+    var filmUpdateConfirmed = confirm('Are you sure you want to update this movie?');
+
+    if (filmUpdateConfirmed) {
+
+        var elements = document.getElementById("updateFilmForm").elements;
+        var filmAttributes = {};
+        for(var i = 0 ; i < elements.length ; i++){
+        var item = elements.item(i);
+        filmAttributes[item.name] = item.value;
+        }
+
+        $.ajax({  
+            url: 'update-film',  
+            type: 'PUT',
+            data: JSON.stringify(filmAttributes),
+            contentType: 'application/json',
+            success: function (data) { 
+                alert(data); 
+            },  
+            error: function (data) {  
+                alert(data); 
+            }  
+        });  
+    }
 }
 
 function insertFilm() {
 
+    var dataType = document.getElementById("insertFilmDataFormat").value;
+
     var elements = document.getElementById("insertFilmForm").elements;
-    var filmAttributes ={};
+    var filmAttributes = {};
     for(var i = 0 ; i < elements.length ; i++){
         var item = elements.item(i);
         filmAttributes[item.name] = item.value;
@@ -74,9 +113,12 @@ function insertFilm() {
 
     console.log(filmAttributes);
 
+    alert(dataType);
+
     $.post({
         url: 'insert-film',
-        data: filmAttributes,
+        data: JSON.stringify(filmAttributes),
+		contentType: dataType,
         function(response) {
             alert(response);
             location.reload();
@@ -180,7 +222,7 @@ function getTableBody(tableData) {
         if (filmId == undefined) {
           filmId = rowData[0];
           }
-        body += "<td><a class='btn btn-md btn-warning btn-block' onclick='editFilm(id, name)' name=" + filmId + " id='editFilmButton'><i class='fas fa-edit'></i></a>" +
+        body += "<td><a class='btn btn-md btn-warning btn-block' data-toggle='modal' data-target='#updateFilmModal' onclick='editFilm(name)' name=" + filmId + " id='editFilmButton'><i class='fas fa-edit'></i></a>" +
             "<button type='submit' class='btn btn-md btn-danger btn-block' id='deleteFilmButton' onclick='deleteFilm(value)' name='filmId' value=" + filmId + "><i class='far fa-trash-alt'/></button></td>"
         body += "</tr>\n";
     }
