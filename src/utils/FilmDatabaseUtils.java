@@ -18,12 +18,16 @@ import coreservlets.model.Film;
 public class FilmDatabaseUtils {
 
 	private static SessionFactory generateFactorySession() {
+		SessionFactory sessionFactory = null;
+		
 		try {
-			return new AnnotationConfiguration().configure().addAnnotatedClass(Film.class).buildSessionFactory();
+			sessionFactory = new AnnotationConfiguration().configure().addAnnotatedClass(Film.class).buildSessionFactory();
 		} catch (Throwable ex) {
 			System.err.println("Failed to create sessionFactory object." + ex);
 			throw new ExceptionInInitializerError(ex);
 		}
+		
+		return sessionFactory;
 	}
 
 	public List<Film> getAllFilms() {
