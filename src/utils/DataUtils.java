@@ -3,7 +3,6 @@ package utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
@@ -31,31 +30,39 @@ public class DataUtils {
         String dataFormat = request.getParameter("dataFormat");
         
         if (dataFormat == null) {
-        	dataFormat = "json";
+        	dataFormat = "application/json";
         }
 
         String filmResultOutput = "";
 
-        if ("text/xml".equals(dataFormat)) {   
+        if ("application/xml".equals(dataFormat)) {   
             response.setContentType(dataFormat);
+            response.setHeader("content-type", dataFormat);
             filmResultOutput = convertJavaPOJOToXML(films);
         }
         else if ("text/plain".equals(dataFormat)) {
             response.setContentType(dataFormat);
+            response.setHeader("content-type", dataFormat);
             filmResultOutput = convertJavaPOJOToString(films);
+            System.out.println(filmResultOutput);
         }
         else {
             response.setContentType("application/json");
+            response.setHeader("content-type", "application/json");
             filmResultOutput = convertJavaPOJOToJson(films);
         }
         
         request.setAttribute("films", filmResultOutput);
+        
+        System.out.println(filmResultOutput);
+
+        System.out.println("Successfully retrieved the movies in " + dataFormat + ".");
                 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/formatted-films.jsp");        															
         dispatcher.include(request, response);
     }
     
-    public void noResultsFoundInDatabase(HttpServletRequest request, HttpServletResponse response, String errorReason) throws ServletException, IOException {
+    public static void noResultsFoundInDatabase(HttpServletRequest request, HttpServletResponse response, String errorReason) throws ServletException, IOException {
         String errorMessage = "No data found " + errorReason;
         String dataFormat = request.getParameter("dataFormat");
 
@@ -69,17 +76,9 @@ public class DataUtils {
             response.setContentType(dataFormat);
         }
         
-    	String filePath = "/Users/jacobedwards/Desktop/Academic/Portfolio_ /Final Year/Enterprise Programming/eclipse-workspace/DynamicWebProjectMySQLFilmsEclipse/WebContent/WEB-INF/results/no-data-found.jsp";
-        PrintWriter pw = new PrintWriter(filePath);
-        //clear contents of file before writing to it
-        pw.print("");
+        request.setAttribute("message", errorMessage);
         
-        pw.write(errorMessage);
-        pw.close();
-        
-        //delete the string below and use outputPage path once method is working.
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/no-data-found.jsp");
-        															
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/no-data-found.jsp");											
         dispatcher.include(request, response);
     }
     
