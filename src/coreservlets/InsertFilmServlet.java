@@ -62,6 +62,7 @@ public class InsertFilmServlet extends HttpServlet {
 			if (filmInserted) {
 				//Concat is used to add the film title on the end of the string as it will throw a null pointer if empty.
 				System.out.println("Successfully inserted movie: ".concat(film.getTitle()));
+				response.setStatus(HttpServletResponse.SC_CREATED);
 				response.getWriter().write("Successfully inserted movie: ".concat(film.getTitle()));
 		        System.out.println("--------------------");
 

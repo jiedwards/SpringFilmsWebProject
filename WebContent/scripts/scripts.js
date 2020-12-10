@@ -1,34 +1,38 @@
 var tableHeadings = ["ID", "Title", "Year", "Director", "Stars", "Review", "Options"];
 
+//More efficient to store the functions in a dictionary, as opposed to multiple if/else statements checking the data type.
+var dataTypeToParserDict = {
+    'application/xml': parseXmlAPIResponse,
+    'text/plain': parseStringAPIResponse,
+    'application/json': parseJsonAPIResponse
+}
 $(document).keypress(
-  function(event){
-    if (event.which == '13') {
-      event.preventDefault();
-    }
-});
-
-$(document).on('click', '#success', function(e) {
-			swal(
-				'Success',
-				'You clicked the <b style="color:green;">Success</b> button!',
-				'success'
-			)
-        });
+    function (event) {
+        if (event.which == '13') {
+            event.preventDefault();
+        }
+    });
 
 function successfulAlertBox(message) {
     swal({
-            title: message, 
-            type: "success",
-            text: "This will refresh the page and show the changes.",
-            confirmButtonText: "Great! Close this dialog.",
-        }).then((result) => {
-        location.reload();
-        });
+        title: message,
+        type: "success",
+        text: "This will refresh the page and show the changes.",
+        confirmButtonText: "Great! Close this dialog.",
+    }).then((result) => {
+        document.location.href = "/DynamicWebProjectMySQLFilmsEclipse";
+    });
 }
 
-        
-        
-function filmSearchHandler(searchOptionType, searchTerm, searchFieldDataFormat, resultRegion) {
+function errorAlertBox(message) {
+    swal(
+        message,
+        'Nothing will be changed.',
+        'error'
+    )
+}
+
+function filmSearchHandler(searchOptionType, searchTerm, searchFieldDataFormat) {
 
     var searchOption = document.getElementById(searchOptionType).value;
     var searchTerm = document.getElementById(searchTerm).value;
@@ -37,7 +41,7 @@ function filmSearchHandler(searchOptionType, searchTerm, searchFieldDataFormat, 
 
     if (searchTerm == '') {
         requestAddress = 'get-films';
-        getAllFilmsHandler(dataFormat, resultRegion);
+        getAllFilmsHandler(dataFormat);
     } else {
         if (searchOption == 'film_title') {
             requestAddress = 'get-films-by-title';
@@ -46,35 +50,36 @@ function filmSearchHandler(searchOptionType, searchTerm, searchFieldDataFormat, 
         } else if (searchOption == 'film_id') {
             requestAddress = 'get-film-by-id';
         }
-        getByFieldRequestWrapper(requestAddress, searchOption, searchTerm, dataFormat, resultRegion);
+        getByFieldRequestWrapper(requestAddress, searchOption, searchTerm, dataFormat);
     }
 }
 
-function getAllFilmsHandler(dataFormat, resultRegion) {
+function getAllFilmsHandler(dataFormat) {
     var address = "get-films?dataFormat=" + dataFormat;
 
-    getRequestHandler(address, dataFormat, resultRegion);
+    getRequestHandler(address, dataFormat);
 }
 
-function getByFieldRequestWrapper(requestAddress, searchOption, searchTerm, dataFormat, resultRegion) {
+function getByFieldRequestWrapper(requestAddress, searchOption, searchTerm, dataFormat) {
     var address = requestAddress + "?dataFormat=" + dataFormat + "&" + searchOption + "=" + searchTerm;
-    getRequestHandler(address, dataFormat, resultRegion);
+    getRequestHandler(address, dataFormat);
 }
 
-function getRequestHandler(address, dataType, resultRegion) {
-    if (dataType == 'text/xml') {
-        $.get(address, function(data) {
-            parseXmlAPIResponse(data, resultRegion);
-        })
-    } else if (dataType == 'text/plain') {
-        $.get(address, function(data) {
-            parseStringAPIResponse(data, resultRegion);
-        })
-    } else if (dataType == 'application/json') {
-        $.get(address, function(data) {
-            parseJsonAPIResponse(data, resultRegion);
-        })
-    }
+function getRequestHandler(address, dataType) {
+
+    //More efficient to store the functions in a dictionary, as opposed to multiple if/else statements verifying data type.
+    let getRequestParser = (dataTypeToParserDict[dataType]);
+
+    $.get({
+        url: address,
+        contentType: dataType,
+        success: function (response, status, xhr) {
+            getRequestParser(response, xhr.getResponseHeader('content-type'));
+        },
+        error: function (data) {
+            errorAlertBox(data.responseText);
+        }
+    })
 }
 
 function editFilm(filmId) {
@@ -82,15 +87,15 @@ function editFilm(filmId) {
 
     //Get by ID request using Fetch, a new JS request.
     fetch(address)
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('update_film_id').value = data[0].id;
-        document.getElementById('update_film_title').value = data[0].title;
-        document.getElementById('update_film_director').value = data[0].director;
-        document.getElementById('update_film_year').value = data[0].year;
-        document.getElementById('update_film_stars').value = data[0].stars;
-        document.getElementById('update_film_review').value = data[0].review;
-    });
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('update_film_id').value = data[0].id;
+            document.getElementById('update_film_title').value = data[0].title;
+            document.getElementById('update_film_director').value = data[0].director;
+            document.getElementById('update_film_year').value = data[0].year;
+            document.getElementById('update_film_stars').value = data[0].stars;
+            document.getElementById('update_film_review').value = data[0].review;
+        });
 }
 
 function updateFilm() {
@@ -101,51 +106,52 @@ function updateFilm() {
 
         var elements = document.getElementById("updateFilmForm").elements;
         var filmAttributes = {};
-        for(var i = 0 ; i < elements.length ; i++){
-        var item = elements.item(i);
-        filmAttributes[item.name] = item.value;
+        for (var i = 0; i < elements.length; i++) {
+            var item = elements.item(i);
+            filmAttributes[item.name] = item.value;
         }
 
-        $.ajax({  
-            url: 'update-film',  
+        $.ajax({
+            url: 'update-film',
             type: 'PUT',
             data: JSON.stringify(filmAttributes),
             contentType: 'application/json',
-            success: function (data) { 
-                successfulAlertBox(data); 
-            },  
-            error: function (data) {  
-                alert(data); 
-            }  
-        });  
+            success: function (data) {
+                successfulAlertBox(data);
+            },
+            error: function (data) {
+                errorAlertBox(data);
+            }
+        });
     }
 }
 
 function insertFilm() {
 
     var dataType = document.getElementById("insertFilmDataFormat").value;
-
     var elements = document.getElementById("insertFilmForm").elements;
     var filmAttributes = {};
-    for(var i = 0 ; i < elements.length ; i++){
+
+    for (var i = 0; i < elements.length; i++) {
         var item = elements.item(i);
         filmAttributes[item.name] = item.value;
     }
 
-    console.log(filmAttributes);
+    var filmInsertConfirmed = confirm('Are you sure you want to insert ' + filmAttributes.title + '?');
 
-    alert(dataType);
-
-    $.post({
-        url: 'insert-film',
-        data: JSON.stringify(filmAttributes),
-		contentType: dataType,
-        function(response) {
-            console.log('hit');
-            successfulAlertBox(response);
-        }
-    })
-
+    if (filmInsertConfirmed) {
+        $.post({
+            url: 'insert-film',
+            data: JSON.stringify(filmAttributes),
+            contentType: dataType,
+            success: function (data) {
+                successfulAlertBox(data);
+            },
+            error: function (data) {
+                errorAlertBox(data);
+            }
+        })
+    }
 }
 
 
@@ -155,52 +161,138 @@ function deleteFilm(filmId) {
     var filmDeleteConfirmed = confirm('Are you sure you want to delete movie ' + filmId + '?');
 
     if (filmDeleteConfirmed) {
-        $.ajax({  
-            url: 'delete-film?filmId=' + filmId,  
+        $.ajax({
+            url: 'delete-film?filmId=' + filmId,
             type: 'DELETE',
-            success: function (data) {  
+            success: function (data) {
                 successfulAlertBox(data);
-                // alert(data); 
-                
-            },  
-            error: function (data) {  
-                alert(data); 
-            }  
-        });  
+            },
+            error: function (data) {
+                errorAlertBox(data);
+            }
+        });
     }
 }
 
+// Create JSON array with outer wrapper data: for XML and String
 
-function parseXmlAPIResponse(data, resultRegion) {
+function parseXmlAPIResponse(data, dataType) {
     var films = data.getElementsByTagName("film");
-    var rowData = new Array(films.length);
-    var subElementNames = ["id", "title", "year", "director", "stars", "review"];
+    var rowData = new Array();
     for (var i = 0; i < films.length; i++) {
-        rowData[i] =
-            getElementValues(films[i], subElementNames);
+        var subElementNames = ["id", "title", "year", "director", "stars", "review"];
+        var film = films[i];
+        // if (getElementValues(films[i], subElementNames) != "") {
+            rowData[i] = getElementValues(film, subElementNames);
+        // }
     }
-    generateTable(rowData, resultRegion);
+
+    // var xmlDocument = request.responseXML;
+    // var customers = 
+    //   xmlDocument.getElementsByTagName("customer");
+    // var rows = new Array();
+    // for(var i=0; i<customers.length; i++) {
+    //   var customer = customers[i];
+    //   var subElements = 
+    //     ["id", "firstName", "lastName", "balance"];
+    //   rows[i] = getElementValues(customer, subElements);
+    // }
+
+    generateTable(rowData, dataType);
 }
 
-function parseStringAPIResponse(data, resultRegion) {
-    var rowStrings = data.split(/[\n\r]+/);
-    var rowData = new Array(rowStrings.length - 1);
-    for (var i = 1; i < rowStrings.length; i++) {
-        rowData[i - 1] = rowStrings[i].split("#");
+function parseStringAPIResponse(data, dataType) {
+    var films = data.split(/\n+/);
+    var rowData = new Array();
+    for (var i = 1; i < films.length; i++) {
+        if (films[i].length > 1) {
+            rowData.push(films[i].split("#"));
+        }
     }
-    generateTable(rowData, resultRegion);
+
+    // var customers = rawData.split(/\n+/);
+    // var rows = new Array();
+    // for(var i=0; i<customers.length; i++) {
+    //   if (customers[i].length > 1) {  // Ignore blank lines
+    //     rows.push(customers[i].split("#"));
+    //   }
+    // }
+
+
+    generateTable(rowData, dataType);
 }
 
-function parseJsonAPIResponse(rowData, resultRegion) {
-    console.log('here');
-    $("#errorAlert").show();
-    generateTable(rowData, resultRegion);
+function parseJsonAPIResponse(rowData, dataType) {
+    generateTable(rowData, dataType);
 }
 
-function generateTable(rowData, resultRegion) {
-    console.log(rowData);
-    var table = getTable(tableHeadings, rowData);
-    document.getElementById(resultRegion).innerHTML = table;
+function generateTable(data, dataType) { 
+    // Consider converting JSON data to Javascript object to reduce the need for two data tables.
+    if (dataType.includes("json")) { 
+        jsonDataTable(data);
+    } else {
+        xmlStringDataTable(data);
+    }
+}
+
+function xmlStringDataTable(data) {
+    return $('#moviesTable').DataTable({
+        "bDestroy": true,
+        "searching": false,
+        "autoWidth": true,
+        data: data,
+        columns: [
+            { title: "Film ID" },
+            { title: "Title" },
+            { title: "Year" },
+            { title: "Director" },
+            { title: "Stars" },
+            { title: "Review" },
+            {
+                data: null,
+                title: "Options",
+                className: "center",
+                render:function(data, type, row)
+            {
+
+                let filmId = data[0];
+
+              return "<a class='btn btn-md btn-warning btn-block' data-toggle='modal' data-target='#updateFilmModal' onclick='editFilm(name)' name=" + filmId + " id='editFilmButton'><i class='fas fa-edit'></i></a>" +
+            "<button type='submit' class='btn btn-md btn-danger btn-block' id='deleteFilmButton' onclick='deleteFilm(value)' name='filmId' value=" + filmId + "><i class='far fa-trash-alt'/></button>"
+            }    
+        }
+        ]
+    });
+}
+
+function jsonDataTable(rowData) {
+    return $('#moviesTable').DataTable({
+        "bDestroy": true,
+        "searching": false,
+        "autoWidth": true,
+        data: rowData,
+        columns: [
+            { data: ".id", title: "Film ID" },
+            { data: ".title", title: "Title" },
+            { data: ".year", title: "Year" },
+            { data: ".director", title: "Director" },
+            { data: ".review", title: "Stars" },
+            { data: ".stars", title: "Review" },
+            {
+                data: null,
+                title: "Options",
+                className: "center",
+                render:function(data, type, row)
+            {
+
+                let filmId = data["id"];
+
+              return "<a class='btn btn-md btn-warning btn-block' data-toggle='modal' data-target='#updateFilmModal' onclick='editFilm(name)' name=" + filmId + " id='editFilmButton'><i class='fas fa-edit'></i></a>" +
+            "<button type='submit' class='btn btn-md btn-danger btn-block' id='deleteFilmButton' onclick='deleteFilm(value)' name='filmId' value=" + filmId + "><i class='far fa-trash-alt'/></button>"
+            }    
+        }
+        ]
+    });
 }
 
 function getElementValues(element, subElementNames) {
@@ -212,10 +304,6 @@ function getElementValues(element, subElementNames) {
     }
     return (values);
 }
-
-// Takes as input an array of headings (to go into th elements)
-// and an array-of-arrays of rows (to go into td
-// elements). Builds an xhtml table from the data.
 
 function getTable(headings, tableData) {
     var table = "<table border='1' id='movie-table-data' class='ajaxTable table table-hover .table-responsive table-sm mb-2'>\n" +
@@ -242,13 +330,12 @@ function getTableBody(tableData) {
         for (property in rowData) {
             body += "<td>" + rowData[property] + "</td>";
         }
-        // console.log(rowData);
 
         // Ensures that the filmId value is identified whether the response is in JSON, XML or String 
         var filmId = rowData.id;
         if (filmId == undefined) {
-          filmId = rowData[0];
-          }
+            filmId = rowData[0];
+        }
         body += "<td><a class='btn btn-md btn-warning btn-block' data-toggle='modal' data-target='#updateFilmModal' onclick='editFilm(name)' name=" + filmId + " id='editFilmButton'><i class='fas fa-edit'></i></a>" +
             "<button type='submit' class='btn btn-md btn-danger btn-block' id='deleteFilmButton' onclick='deleteFilm(value)' name='filmId' value=" + filmId + "><i class='far fa-trash-alt'/></button></td>"
         body += "</tr>\n";

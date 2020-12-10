@@ -44,6 +44,7 @@ public class GetFilmByIdServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String filmId = request.getParameter("film_id");
+		System.out.println("Request recieved to GET data by ID: " + filmId);
 		
         if (isValidFilmId(filmId)) {
         	filmIdDatabaseRequest(request, response, filmId);
@@ -66,7 +67,8 @@ public class GetFilmByIdServlet extends HttpServlet {
     	System.out.println(film);
 
         if (film == null) {
-        	dataUtils.noResultsFoundInDatabase(request, response, "due to the ID not being found.");
+			response.getWriter().write("No movie exists with that ID.");
+//        	dataUtils.noResultsFoundInDatabase(request, response, "due to the ID not being found.");
         } else {
         	allFilms.add(film);
         	dataUtils.sendDataToWebpage(request, response, allFilms);

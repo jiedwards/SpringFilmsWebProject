@@ -12,10 +12,16 @@
 	href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
 	integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
 	crossorigin="anonymous">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+ 
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
 <script
@@ -25,7 +31,7 @@
 <title>All Movies</title>
 </head>
 <body class="bg-light"
-	onload="getAllFilmsHandler('application/json', 'moviesTable')">
+	onload="getAllFilmsHandler('application/json')">
 
 
 	<div class="container mb-2 bg-light text-dark">
@@ -34,16 +40,12 @@
 		<h1>All Movies</h1>
 
 		<div class="image">
-			<a href="./"> <img src="././images/movie-reel.jpg" alt="Movie Reel"
-				height="25%" width="25%">
+			<a href="./"> <img src="././images/movie-reel.jpg"
+				alt="Movie Reel" height="25%" width="25%">
 			</a>
 		</div>
 
 	</div>
-	
-		<button id="success">Success</button>
-		
-		<button onclick="alertBox()" id="link">Redirect to Utopian</button>
 
 	<div class="container-fluid mb-2 bg-light text-dark">
 
@@ -65,7 +67,7 @@
 				<div class="form-group">
 					<select class="custom-select mr-sm-1" id="searchFieldDataFormat">
 						<option selected value="application/json">JSON format</option>
-						<option value="text/xml">XML format</option>
+						<option value="application/xml">XML format</option>
 						<option value="text/plain">String format</option>
 					</select>
 				</div>
@@ -80,23 +82,14 @@
 	<div class="container mb-2 bg-light text-dark">
 
 		<a href="insert-film.jsp" class="btn btn-success btn-block"><i
-			class="far fa-plus-square fa-fw"></i> Insert new movie </a>
-
-		<br> <br>
+			class="far fa-plus-square fa-fw"></i> Insert new movie </a> <br> <br>
 	</div>
+		
+		<div class="container-fluid">
 	
-	<div class="container-fluid">
-		<table id="moviesTable"
-			class="table table-hover .table-responsive table-sm mb-2">
+	<table id="moviesTable" class="table table-hover .table-responsive table-sm mb-2" width="100%"></table>
 
-			<tbody>
-
-			</tbody>
-
-		</table>
-	</div>
-
-
+</div>
 
 	<div class="modal fade" id="updateFilmModal" tabindex="-1"
 		role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
@@ -110,16 +103,18 @@
 					<h1>Update a Vehicle</h1>
 
 
-					<form action="#" id='updateFilmForm' onsubmit='updateFilm();return false'>
-					
+					<form action="#" id='updateFilmForm'
+						onsubmit='updateFilm();return false'>
+
 						<div class="form-group">
 							<label for="film_id">Film ID</label> <input type="text"
 								class="form-control" id="update_film_id" name="film_id" readonly>
 						</div>
-						
+
 						<div class="form-group">
 							<label for="film_title">Title</label> <input type="text"
-								class="form-control" id="update_film_title" name="title" required>
+								class="form-control" id="update_film_title" name="title"
+								required>
 						</div>
 
 						<div class="form-group">
@@ -129,21 +124,25 @@
 						</div>
 						<div class="form-group">
 							<label for="film_director">Director</label> <input type="text"
-								class="form-control" min=0 id="update_film_director" name="director" required>
+								class="form-control" min=0 id="update_film_director"
+								name="director" required>
 						</div>
 
 						<div class="form-group">
 							<label for="film_stars">Stars</label> <input type="text"
-								class="form-control" id="update_film_stars" name="stars" required>
+								class="form-control" id="update_film_stars" name="stars"
+								required>
 						</div>
 
 						<div class="form-group">
 							<label for="review">Review</label> <input type="text"
-								class="form-control" id="update_film_review" name="review" required>
+								class="form-control" id="update_film_review" name="review"
+								required>
 						</div>
 
-						<input type="submit" class="btn btn-primary btn-lg btn-block" value="Finish updating movie data"/>
-							
+						<input type="submit" class="btn btn-primary btn-lg btn-block"
+							value="Finish updating movie data" />
+
 					</form>
 				</div>
 
