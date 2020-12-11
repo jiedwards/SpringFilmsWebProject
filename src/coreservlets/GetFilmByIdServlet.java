@@ -3,7 +3,6 @@ package coreservlets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import coreservlets.dao.FilmDAO;
 import coreservlets.model.Film;
 import utils.DataUtils;
 import utils.FilmDatabaseUtils;
@@ -25,7 +23,6 @@ import utils.FilmDatabaseUtils;
 	)
 public class GetFilmByIdServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	FilmDAO filmDAO = new FilmDAO();
     String webAddress;
     DataUtils dataUtils = new DataUtils();
     FilmDatabaseUtils filmDbUtils = new FilmDatabaseUtils();
@@ -41,7 +38,7 @@ public class GetFilmByIdServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String filmId = request.getParameter("film_id");
 		System.out.println("Request recieved to GET data by ID: " + filmId);
@@ -49,7 +46,8 @@ public class GetFilmByIdServlet extends HttpServlet {
         if (isValidFilmId(filmId)) {
         	filmIdDatabaseRequest(request, response, filmId);
         } else {
-        	dataUtils.noResultsFoundInDatabase(request, response, "due to an invalid film ID.");
+        	DataUtils.noResultsFoundInDatabase(request, response, "No movie found due to invalid Film ID.");
+
         }
 	}
 
@@ -67,11 +65,10 @@ public class GetFilmByIdServlet extends HttpServlet {
     	System.out.println(film);
 
         if (film == null) {
-			response.getWriter().write("No movie exists with that ID.");
-//        	dataUtils.noResultsFoundInDatabase(request, response, "due to the ID not being found.");
+        	DataUtils.noResultsFoundInDatabase(request, response, "No movie exists with that ID.");
         } else {
         	allFilms.add(film);
-        	dataUtils.sendDataToWebpage(request, response, allFilms);
+        	DataUtils.sendDataToWebpage(request, response, allFilms);
         }
     }
 	

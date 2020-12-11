@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
@@ -16,13 +17,17 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.sun.java.swing.plaf.windows.WindowsInternalFrameTitlePane.ScalableIconUIResource;
 
 import coreservlets.model.Film;
 import coreservlets.model.Films;
 
 
-public class DataUtils {
-    
+public class DataUtils extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
 	public static void sendDataToWebpage(HttpServletRequest request, HttpServletResponse response, List<Film> films) throws ServletException, IOException {
     	response.setHeader("Cache-control", "no-cache");
         response.setHeader("Pragma", "no-cache");
@@ -54,32 +59,16 @@ public class DataUtils {
         
         request.setAttribute("films", filmResultOutput);
         
-        System.out.println(filmResultOutput);
-
         System.out.println("Successfully retrieved the movies in " + dataFormat + ".");
                 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/formatted-films.jsp");        															
         dispatcher.include(request, response);
     }
     
-    public static void noResultsFoundInDatabase(HttpServletRequest request, HttpServletResponse response, String errorReason) throws ServletException, IOException {
-        String errorMessage = "No data found " + errorReason;
-        String dataFormat = request.getParameter("dataFormat");
-
-        if ("text/xml".equals(dataFormat)) {   
-            response.setContentType(dataFormat);
-        }
-        else if ("text/plain".equals(dataFormat)) {
-            response.setContentType(dataFormat);
-        }
-        else {
-            response.setContentType(dataFormat);
-        }
-        
-        request.setAttribute("message", errorMessage);
-        
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/results/no-data-found.jsp");											
-        dispatcher.include(request, response);
+    public static void noResultsFoundInDatabase(HttpServletRequest request, HttpServletResponse response, String errorMessage) throws ServletException, IOException {
+    	System.out.println(errorMessage);
+        response.setHeader("no-data-found-message", errorMessage);
+        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
     
     public static String convertJavaPOJOToXML(List<Film> filmList) 

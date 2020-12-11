@@ -1,13 +1,6 @@
 package coreservlets;
 
-import java.io.BufferedReader;
-import java.io.Console;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.sql.SQLException;
-import java.util.HashMap;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,9 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.HibernateException;
 
-import com.google.gson.Gson;
-
-import coreservlets.dao.FilmDAO;
 import coreservlets.model.Film;
 import utils.DataUtils;
 import utils.FilmDatabaseUtils;
@@ -45,7 +35,6 @@ public class InsertFilmServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
-		FilmDAO filmDAO = new FilmDAO();
 		Film film = null;
 		
         System.out.println("--------------------");

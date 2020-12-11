@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import coreservlets.dao.FilmDAO;
 import coreservlets.model.Film;
 import utils.DataUtils;
 import utils.FilmDatabaseUtils;
@@ -25,7 +24,6 @@ import utils.FilmDatabaseUtils;
 public class GetFilmsByAnyTermServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     String webAddress;
-    DataUtils dataUtils = new DataUtils();
     FilmDatabaseUtils filmDbUtils = new FilmDatabaseUtils();
        
     /**
@@ -42,9 +40,11 @@ public class GetFilmsByAnyTermServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		String searchTerm = request.getParameter("any_field");
+		
+		System.out.println("Request recieved to GET data by: " + searchTerm);
 
         if (searchTerm == null) {
-        	dataUtils.noResultsFoundInDatabase(request, response, "due to invalid search term");
+        	DataUtils.noResultsFoundInDatabase(request, response, "No movie found due to invalid search term.");
 
         } else {
         	filmsByAnySearchTermDatabaseRequest(request, response, searchTerm);
@@ -64,9 +64,9 @@ public class GetFilmsByAnyTermServlet extends HttpServlet {
 		List<Film> allFilmsSearchedByTerm = filmDbUtils.getFilmsByAnyTerm(searchTerm);
 
         if (allFilmsSearchedByTerm.isEmpty()) {
-        	dataUtils.noResultsFoundInDatabase(request, response, "due to no data being found by the search term.");
+        	DataUtils.noResultsFoundInDatabase(request, response, "No movie matches for the search term: " + searchTerm);
         } else {
-        	dataUtils.sendDataToWebpage(request, response, allFilmsSearchedByTerm);
+        	DataUtils.sendDataToWebpage(request, response, allFilmsSearchedByTerm);
         }
     }
 

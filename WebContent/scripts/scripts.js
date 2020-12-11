@@ -66,7 +66,6 @@ function getByFieldRequestWrapper(requestAddress, searchOption, searchTerm, data
 }
 
 function getRequestHandler(address, dataType) {
-
     //More efficient to store the functions in a dictionary, as opposed to multiple if/else statements verifying data type.
     let getRequestParser = (dataTypeToParserDict[dataType]);
 
@@ -74,10 +73,17 @@ function getRequestHandler(address, dataType) {
         url: address,
         contentType: dataType,
         success: function (response, status, xhr) {
-            getRequestParser(response, xhr.getResponseHeader('content-type'));
+            // No content returned from server
+            if (xhr.status == 204) {
+                let errorMessage = xhr.getResponseHeader('no-data-found-message');
+                errorAlertBox(errorMessage);
+            } else {
+                console.log(response);
+                getRequestParser(response, xhr.getResponseHeader('content-type'));
+            }
         },
-        error: function (data) {
-            errorAlertBox(data.responseText);
+        error: function (response) {
+            errorAlertBox(response.responseText);
         }
     })
 }
@@ -154,9 +160,6 @@ function insertFilm() {
     }
 }
 
-
-
-
 function deleteFilm(filmId) {
     var filmDeleteConfirmed = confirm('Are you sure you want to delete movie ' + filmId + '?');
 
@@ -174,30 +177,14 @@ function deleteFilm(filmId) {
     }
 }
 
-// Create JSON array with outer wrapper data: for XML and String
-
 function parseXmlAPIResponse(data, dataType) {
     var films = data.getElementsByTagName("film");
     var rowData = new Array();
     for (var i = 0; i < films.length; i++) {
         var subElementNames = ["id", "title", "year", "director", "stars", "review"];
         var film = films[i];
-        // if (getElementValues(films[i], subElementNames) != "") {
-            rowData[i] = getElementValues(film, subElementNames);
-        // }
+        rowData[i] = getElementValues(film, subElementNames);
     }
-
-    // var xmlDocument = request.responseXML;
-    // var customers = 
-    //   xmlDocument.getElementsByTagName("customer");
-    // var rows = new Array();
-    // for(var i=0; i<customers.length; i++) {
-    //   var customer = customers[i];
-    //   var subElements = 
-    //     ["id", "firstName", "lastName", "balance"];
-    //   rows[i] = getElementValues(customer, subElements);
-    // }
-
     generateTable(rowData, dataType);
 }
 
@@ -209,36 +196,22 @@ function parseStringAPIResponse(data, dataType) {
             rowData.push(films[i].split("#"));
         }
     }
-
-    // var customers = rawData.split(/\n+/);
-    // var rows = new Array();
-    // for(var i=0; i<customers.length; i++) {
-    //   if (customers[i].length > 1) {  // Ignore blank lines
-    //     rows.push(customers[i].split("#"));
-    //   }
-    // }
-
-
     generateTable(rowData, dataType);
 }
 
-function parseJsonAPIResponse(rowData, dataType) {
-    generateTable(rowData, dataType);
-}
-
-function generateTable(data, dataType) { 
-    // Consider converting JSON data to Javascript object to reduce the need for two data tables.
-    if (dataType.includes("json")) { 
-        jsonDataTable(data);
-    } else {
-        xmlStringDataTable(data);
+function parseJsonAPIResponse(films, dataType) {
+    var rowData = new Array();
+    for (var i = 0; i < films.length; i++) {
+        var film = films[i];
+        rowData[i] = [film.id, film.title,
+        film.year, film.director, film.stars, film.review];
     }
+    generateTable(rowData, dataType);
 }
 
-function xmlStringDataTable(data) {
+function generateTable(data) {
     return $('#moviesTable').DataTable({
         "bDestroy": true,
-        "searching": false,
         "autoWidth": true,
         data: data,
         columns: [
@@ -252,45 +225,14 @@ function xmlStringDataTable(data) {
                 data: null,
                 title: "Options",
                 className: "center",
-                render:function(data, type, row)
-            {
+                render: function (data, type, row) {
 
-                let filmId = data[0];
+                    let filmId = data[0];
 
-              return "<a class='btn btn-md btn-warning btn-block' data-toggle='modal' data-target='#updateFilmModal' onclick='editFilm(name)' name=" + filmId + " id='editFilmButton'><i class='fas fa-edit'></i></a>" +
-            "<button type='submit' class='btn btn-md btn-danger btn-block' id='deleteFilmButton' onclick='deleteFilm(value)' name='filmId' value=" + filmId + "><i class='far fa-trash-alt'/></button>"
-            }    
-        }
-        ]
-    });
-}
-
-function jsonDataTable(rowData) {
-    return $('#moviesTable').DataTable({
-        "bDestroy": true,
-        "searching": false,
-        "autoWidth": true,
-        data: rowData,
-        columns: [
-            { data: ".id", title: "Film ID" },
-            { data: ".title", title: "Title" },
-            { data: ".year", title: "Year" },
-            { data: ".director", title: "Director" },
-            { data: ".review", title: "Stars" },
-            { data: ".stars", title: "Review" },
-            {
-                data: null,
-                title: "Options",
-                className: "center",
-                render:function(data, type, row)
-            {
-
-                let filmId = data["id"];
-
-              return "<a class='btn btn-md btn-warning btn-block' data-toggle='modal' data-target='#updateFilmModal' onclick='editFilm(name)' name=" + filmId + " id='editFilmButton'><i class='fas fa-edit'></i></a>" +
-            "<button type='submit' class='btn btn-md btn-danger btn-block' id='deleteFilmButton' onclick='deleteFilm(value)' name='filmId' value=" + filmId + "><i class='far fa-trash-alt'/></button>"
-            }    
-        }
+                    return "<a class='btn btn-md btn-warning btn-block' data-toggle='modal' data-target='#updateFilmModal' onclick='editFilm(name)' name=" + filmId + " id='editFilmButton'><i class='fas fa-edit'></i></a>" +
+                        "<button type='submit' class='btn btn-md btn-danger btn-block' id='deleteFilmButton' onclick='deleteFilm(value)' name='filmId' value=" + filmId + "><i class='far fa-trash-alt'/></button>"
+                }
+            }
         ]
     });
 }

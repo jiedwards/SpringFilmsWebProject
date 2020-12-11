@@ -24,7 +24,6 @@ import utils.FilmDatabaseUtils;
 	)public class DeleteFilmServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     FilmDatabaseUtils filmDbUtils = new FilmDatabaseUtils();
-    private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getSimpleName());
 
        
     /**

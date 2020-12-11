@@ -2,7 +2,6 @@ package coreservlets;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,9 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import coreservlets.dao.FilmDAO;
 import coreservlets.model.Film;
 import utils.DataUtils;
+import utils.FilmDatabaseUtils;
 
 /**
  * Servlet implementation class GetFilmsByTitle
@@ -23,9 +22,8 @@ import utils.DataUtils;
 	)
 public class GetFilmsByTitleServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	FilmDAO filmDAO = new FilmDAO();
     String webAddress;
-    DataUtils dataUtils = new DataUtils();
+    FilmDatabaseUtils filmDbUtils = new FilmDatabaseUtils();
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -43,7 +41,7 @@ public class GetFilmsByTitleServlet extends HttpServlet {
 		String filmTitle = request.getParameter("film_title");
 
         if (filmTitle == null) {
-        	dataUtils.noResultsFoundInDatabase(request, response, "due to an invalid film title.");
+        	DataUtils.noResultsFoundInDatabase(request, response, "No movie found due invalid Film Title.");
         } else {
         	filmTitleDatabaseRequest(request, response, filmTitle);
         }
@@ -57,12 +55,12 @@ public class GetFilmsByTitleServlet extends HttpServlet {
 	}
 	
 	private void filmTitleDatabaseRequest(HttpServletRequest request, HttpServletResponse response, String filmTitle) throws ServletException, IOException {
-        List<Film> allFilmsSearchedByTitle = filmDAO.getFilmsByTitle(filmTitle);
+        List<Film> allFilmsSearchedByTitle = filmDbUtils.getFilmsByTitle(filmTitle);
 
         if (allFilmsSearchedByTitle.isEmpty()) {
-        	dataUtils.noResultsFoundInDatabase(request, response, "due to no matches found in the database.");
+        	DataUtils.noResultsFoundInDatabase(request, response, "No movie matches found for: " + filmTitle);
         } else {
-        	dataUtils.sendDataToWebpage(request, response, allFilmsSearchedByTitle);
+        	DataUtils.sendDataToWebpage(request, response, allFilmsSearchedByTitle);
         }
     }
 
