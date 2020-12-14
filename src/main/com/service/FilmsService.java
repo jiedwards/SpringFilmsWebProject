@@ -148,6 +148,36 @@ public class FilmsService {
 		return new ResponseEntity<String>(resultMessage, HttpStatus.OK);
 	}
 
+	public ResponseEntity<?> deleteFilmByIdService(String filmIdString)
+			throws HibernateException, IllegalArgumentException {
+
+		System.out.println("--------------------");
+		System.out.println("Request recieved to delete film with ID: " + filmIdString);
+
+		String resultMessage = "";
+		if (!dataUtils.isValidFilmId(filmIdString)) {
+			return dataUtils.failedRequestErrorMessage("No movie found to delete due to invalid Film ID: " + filmIdString);
+		}
+
+		int filmId = Integer.parseInt(filmIdString);
+
+//		Method is created to avoid an ambiguous exception being thrown when the movie isn't identified in the try/catch
+		if (!filmExistsInDatabase(filmId)) {
+			return dataUtils.failedRequestErrorMessage("No movie found with Film ID: " + filmId);
+		}
+
+		try {
+			filmDbUtils.deleteFilm(filmId);
+		} catch (Exception e) {
+			resultMessage = String.format("Failed to delete movie with ID: %d. Make sure the movie exists.", filmId);
+			e.printStackTrace();
+			return dataUtils.failedRequestErrorMessage(resultMessage);
+		}
+		
+		resultMessage = "Successfully deleted movie with ID: " + filmId;
+		System.out.println(resultMessage);
+		return new ResponseEntity<String>(resultMessage, HttpStatus.OK);
+	}
 
 //	Method is created to avoid an ambiguous exception being thrown when the movie isn't identified in the try/catch
 	private boolean filmExistsInDatabase(int filmId) {

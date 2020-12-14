@@ -57,6 +57,12 @@ public class FilmsController {
 		System.out.println(film);
 		return filmService.updateFilmById(contentType, film);
 	}
-
+	
+	@RequestMapping(value = "/delete-film", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteFilmById(@RequestParam("film_id") String filmId) {
+		
+		return filmService.deleteFilmByIdService(filmId);
+	}
+	
 	
 }
