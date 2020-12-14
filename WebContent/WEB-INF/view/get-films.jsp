@@ -86,7 +86,9 @@
 		
 		<div class="container-fluid">
 	
-	<table id="moviesTable" class="table table-hover .table-responsive table-sm mb-2" width="100%"></table>
+	<table id="moviesTable" class="table table-hover table-responsive table-sm mb-2" width="100%">
+	  <thead class="thead-dark"></thead>
+	  </table>
 
 </div>
 
@@ -107,40 +109,39 @@
 
 						<div class="form-group">
 							<label for="film_id">Film ID</label> <input type="text"
-								class="form-control" id="update_film_id" name="film_id" readonly>
+								class="form-control" id="update_film_id" name="id" readonly />
 						</div>
 
 						<div class="form-group">
 							<label for="film_title">Title</label> <input type="text"
 								class="form-control" id="update_film_title" name="title"
-								required>
+								required />
 						</div>
 
 						<div class="form-group">
 							<label for="film_year">Year</label> <input type="number"
 								class="form-control" min=1800 max=2020 id="update_film_year"
-								name="year" required>
+								name="year" required />
 						</div>
 						<div class="form-group">
 							<label for="film_director">Director</label> <input type="text"
 								class="form-control" min=0 id="update_film_director"
-								name="director" required>
+								name="director" required />
 						</div>
 
 						<div class="form-group">
 							<label for="film_stars">Stars</label> <input type="text"
 								class="form-control" id="update_film_stars" name="stars"
-								required>
+								required />
 						</div>
 
 						<div class="form-group">
 							<label for="review">Review</label> <input type="text"
 								class="form-control" id="update_film_review" name="review"
-								required>
+								required />
 						</div>
 
-						<input type="submit" class="btn btn-primary btn-lg btn-block"
-							value="Finish updating movie data" />
+						<button type="submit" class="btn btn-primary btn-lg btn-block">Finish updating movie data</button>
 
 					</form>
 				</div>
