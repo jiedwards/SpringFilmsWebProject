@@ -36,6 +36,32 @@ public class FilmsService {
 		return dataUtils.convertFilmsForClientContentType(contentType, listOfFilmsReturnedByDb, filmsResult);
 	}
 
+	public ResponseEntity<?> getFilmByIdService(String contentType, String filmId) {
+
+		System.out.println("--------------------");
+		System.out.println(String.format("Request recieved to GET data by ID: '%s' in format %s", filmId, contentType));
+
+		if (!dataUtils.isValidFilmId(filmId)) {
+			return dataUtils.failedRequestErrorMessage("No movie found due to invalid Film ID: " + filmId);
+
+		}
+
+		Film film = filmDbUtils.getFilmById(Integer.parseInt(filmId));
+		System.out.println(film);
+
+		if (film == null) {
+			return dataUtils.failedRequestErrorMessage("No movie found for film ID: " + filmId);
+		}
+
+		if (contentType.equalsIgnoreCase("text/plain")) {
+			return new ResponseEntity<String>(film.toString(), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Film>(film, HttpStatus.OK);
+		}
+
+	}
+
+
 //	Method is created to avoid an ambiguous exception being thrown when the movie isn't identified in the try/catch
 	private boolean filmExistsInDatabase(int filmId) {
 		Film film = filmDbUtils.getFilmById(filmId);

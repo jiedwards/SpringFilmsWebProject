@@ -27,6 +27,12 @@ public class FilmsController {
 		
 		return filmService.getAllFilmsService(contentType);
 	}
-	
+
+	@RequestMapping(value = "/get-film-by-id", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE } )
+	public ResponseEntity<?> getFilmById(@RequestHeader("Content-Type") String contentType, @RequestParam("film_id") String filmId) {
+		
+		return filmService.getFilmByIdService(contentType, filmId);
+	}
+
 	
 }
