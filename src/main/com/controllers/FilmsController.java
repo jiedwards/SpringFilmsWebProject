@@ -51,6 +51,12 @@ public class FilmsController {
 		System.out.println(film);
 		return filmService.insertFilm(contentType, film);
 	}
-	
+
+	@RequestMapping(value = "/update-film", method = RequestMethod.PUT, consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE } )
+	public ResponseEntity<?> updateFilm(@RequestHeader("Content-Type") String contentType, @RequestBody Film film) {
+		System.out.println(film);
+		return filmService.updateFilmById(contentType, film);
+	}
+
 	
 }

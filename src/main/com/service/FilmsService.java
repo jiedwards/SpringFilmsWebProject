@@ -121,6 +121,33 @@ public class FilmsService {
 		System.out.println(resultMessage);
 		return new ResponseEntity<String>(resultMessage, HttpStatus.OK);
 	}
+	
+	public ResponseEntity<?> updateFilmById(String contentType, Film updatedFilm) {
+		
+		int filmId = updatedFilm.getId();
+
+		System.out.println("--------------------");
+		System.out.println(String.format("Request recieved to UPDATE film with ID: '%d' in format %s", filmId, contentType));
+		
+//		Method is created to avoid an ambiguous exception being thrown when the movie isn't identified in the try/catch
+		if (!filmExistsInDatabase(filmId)) {
+			return dataUtils.failedRequestErrorMessage("No movie found with Film ID: " + filmId);
+		}
+
+		String resultMessage = "";
+
+		try {
+			filmDbUtils.updateFilm(updatedFilm);
+		} catch (Exception e) {
+			resultMessage = String.format("Failed to update movie with ID: %d. Make sure the movie exists.", filmId);
+			return dataUtils.failedRequestErrorMessage(resultMessage);
+		}
+
+		resultMessage = "Successfully updated movie with ID: " + filmId;
+		System.out.println(resultMessage);
+		return new ResponseEntity<String>(resultMessage, HttpStatus.OK);
+	}
+
 
 //	Method is created to avoid an ambiguous exception being thrown when the movie isn't identified in the try/catch
 	private boolean filmExistsInDatabase(int filmId) {
