@@ -106,7 +106,21 @@ public class FilmsService {
 		return dataUtils.convertFilmsForClientContentType(contentType, listOfFilmsReturnedByDb, filmsResult);
 	}
 
+	public ResponseEntity<?> insertFilm(String contentType, Film newFilm) {
+		
+		System.out.println("--------------------");
+		System.out.println(String.format("Request recieved to INSERT film with title: '%s' in format %s", newFilm.getTitle(), contentType));
 
+		try {
+			filmDbUtils.insertFilm(newFilm);
+		} catch (Exception e) {
+			return dataUtils.failedRequestErrorMessage("Failed to insert movie with title: " + newFilm.getTitle());
+		}
+
+		String resultMessage = "Successfully inserted movie with title: " + newFilm.getTitle();
+		System.out.println(resultMessage);
+		return new ResponseEntity<String>(resultMessage, HttpStatus.OK);
+	}
 
 //	Method is created to avoid an ambiguous exception being thrown when the movie isn't identified in the try/catch
 	private boolean filmExistsInDatabase(int filmId) {

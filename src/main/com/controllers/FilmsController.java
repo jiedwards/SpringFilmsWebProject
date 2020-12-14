@@ -45,6 +45,12 @@ public class FilmsController {
 		
 		return filmService.getFilmsByAnyTermService(contentType, searchTerm);
 	}
-
+	
+	@RequestMapping(value = "/insert-film", method = RequestMethod.POST, consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE } )
+	public ResponseEntity<?> insertFilm(@RequestHeader("Content-Type") String contentType, @RequestBody Film film) {
+		System.out.println(film);
+		return filmService.insertFilm(contentType, film);
+	}
+	
 	
 }
