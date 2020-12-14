@@ -61,6 +61,29 @@ public class FilmsService {
 
 	}
 
+	public ResponseEntity<?> getFilmsByTitleService(String contentType, String filmTitle) {
+
+		System.out.println("--------------------");
+		System.out.println(
+				String.format("Request recieved to GET data by title: '%s' in format %s", filmTitle, contentType));
+
+		if (filmTitle.isEmpty()) {
+			return dataUtils.failedRequestErrorMessage("No movie found due invalid film title: " + filmTitle);
+		}
+
+		List<Film> listOfFilmsReturnedByDb = filmDbUtils.getFilmsByTitle(filmTitle);
+
+		if (listOfFilmsReturnedByDb.isEmpty()) {
+			return dataUtils.failedRequestErrorMessage("No movie matches found for: " + filmTitle);
+		}
+
+		Films filmsResult = new Films();
+		filmsResult.setFilmList(listOfFilmsReturnedByDb);
+
+		return dataUtils.convertFilmsForClientContentType(contentType, listOfFilmsReturnedByDb, filmsResult);
+
+	}
+
 
 //	Method is created to avoid an ambiguous exception being thrown when the movie isn't identified in the try/catch
 	private boolean filmExistsInDatabase(int filmId) {

@@ -33,6 +33,11 @@ public class FilmsController {
 		
 		return filmService.getFilmByIdService(contentType, filmId);
 	}
-
+	
+	@RequestMapping(value = "/get-films-by-title", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE } )
+	public ResponseEntity<?> getFilmByTitle(@RequestHeader("Content-Type") String contentType, @RequestParam("film_title") String filmId) {
+		
+		return filmService.getFilmsByTitleService(contentType, filmId);
+	}
 	
 }
