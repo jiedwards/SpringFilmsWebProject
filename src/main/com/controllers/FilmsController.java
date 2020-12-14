@@ -40,4 +40,11 @@ public class FilmsController {
 		return filmService.getFilmsByTitleService(contentType, filmId);
 	}
 	
+	@RequestMapping(value = "/get-films-by-any-term", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE } )
+	public ResponseEntity<?> getFilmByAnyTerm(@RequestHeader("Content-Type") String contentType, @RequestParam("any_search_term") String searchTerm) {
+		
+		return filmService.getFilmsByAnyTermService(contentType, searchTerm);
+	}
+
+	
 }

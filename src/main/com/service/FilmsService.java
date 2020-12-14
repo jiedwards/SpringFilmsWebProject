@@ -84,6 +84,29 @@ public class FilmsService {
 
 	}
 
+	public ResponseEntity<?> getFilmsByAnyTermService(String contentType, String searchTerm) {
+
+		System.out.println("--------------------");
+		System.out.println(
+				String.format("Request recieved to GET data by term: '%s' in format %s", searchTerm, contentType));
+
+		if (searchTerm.isEmpty()) {
+			return dataUtils.failedRequestErrorMessage("No movie found due invalid search term: " + searchTerm);
+		}
+
+		List<Film> listOfFilmsReturnedByDb = filmDbUtils.getFilmsByAnyTerm(searchTerm);
+
+		if (listOfFilmsReturnedByDb.isEmpty()) {
+			return dataUtils.failedRequestErrorMessage("No movie matches found for: " + searchTerm);
+		}
+
+		Films filmsResult = new Films();
+		filmsResult.setFilmList(listOfFilmsReturnedByDb);
+
+		return dataUtils.convertFilmsForClientContentType(contentType, listOfFilmsReturnedByDb, filmsResult);
+	}
+
+
 
 //	Method is created to avoid an ambiguous exception being thrown when the movie isn't identified in the try/catch
 	private boolean filmExistsInDatabase(int filmId) {
