@@ -45,7 +45,7 @@ function filmSearchHandler(searchOptionType, searchTerm, searchFieldDataFormat) 
     } else {
         if (searchOption == 'film_title') {
             requestAddress = 'get-films-by-title';
-        } else if (searchOption == 'any_field') {
+        } else if (searchOption == 'any_search_term') {
             requestAddress = 'get-films-by-any-term';
         } else if (searchOption == 'film_id') {
             requestAddress = 'get-film-by-id';
@@ -71,14 +71,18 @@ function getRequestHandler(address, dataType) {
 
     $.get({
         url: address,
-        contentType: dataType,
+		headers: {
+			Accept: dataType, 
+			"Content-Type": dataType
+		},
         success: function (response, status, xhr) {
             // No content returned from server
             if (xhr.status == 204) {
                 let errorMessage = xhr.getResponseHeader('no-data-found-message');
                 errorAlertBox(errorMessage);
             } else {
-                getRequestParser(response);
+                console.log(response);
+                getRequestParser(response, xhr.getResponseHeader('content-type'));
             }
         },
         error: function (response) {
@@ -176,37 +180,43 @@ function deleteFilm(filmId) {
     }
 }
 
-function parseXmlAPIResponse(data) {
+function parseXmlAPIResponse(data, dataType) {
+    console.log(JSON.stringify(data));
     var films = data.getElementsByTagName("film");
     var rowData = new Array();
     for (var i = 0; i < films.length; i++) {
         var subElementNames = ["id", "title", "year", "director", "stars", "review"];
+		console.log(films[i]);
         var film = films[i];
         rowData[i] = getElementValues(film, subElementNames);
     }
-    generateTable(rowData);
+    generateTable(rowData, dataType);
 }
 
-function parseStringAPIResponse(data) {
+function parseStringAPIResponse(data, dataType) {
+	console.log(data);
     var films = data.split(/\n+/);
     var rowData = new Array();
-    for (var i = 1; i < films.length; i++) {
-        if (films[i].length > 1) {
+    for (var i = 0; i < films.length; i++) {
+        if (films[i].length >= 1) {
             rowData.push(films[i].split("#"));
         }
     }
-    generateTable(rowData);
+	console.log(rowData);
+    generateTable(rowData, dataType);
 }
 
-function parseJsonAPIResponse(films) {
+function parseJsonAPIResponse(films, dataType) {
+    //films = JSON.parse(films);
+	//console.log(films);
     var rowData = new Array();
     for (var i = 0; i < films.length; i++) {
+	    console.log(films[i]);
         var film = films[i];
         rowData[i] = [film.id, film.title,
         film.year, film.director, film.stars, film.review];
     }
-    console.log(rowData);
-    generateTable(rowData);
+    generateTable(rowData, dataType);
 }
 
 function generateTable(data) {

@@ -7,7 +7,7 @@
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
 	integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
 	crossorigin="anonymous">
-<link rel="stylesheet" href="././css/style.css">
+<link rel="stylesheet" href="./resources/css/style.css">
 <link rel="stylesheet"
 	href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
 	integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
@@ -26,7 +26,7 @@
 	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
 <script
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-<script src="././scripts/scripts.js" type="text/javascript"></script>
+<script src="./resources/scripts/scripts.js" type="text/javascript"></script>
 
 <title>All Movies</title>
 </head>
@@ -40,7 +40,7 @@
 		<h1>All Movies</h1>
 
 		<div class="image">
-			<a href="./"> <img src="././images/movie-reel.jpg"
+			<a href="./"> <img src="./resources/images/movie-reel.jpg"
 				alt="Movie Reel" height="25%" width="25%">
 			</a>
 		</div>
@@ -54,8 +54,7 @@
 			<div class="container mb-2 bg-light text-dark">
 				<label for="searchOptionType"> Search Movie by </label> <select
 					class="custom-select mr-sm-2" id="searchOptionType">
-					<option value="any_field" selected>Any field</option>
-
+					<option value="any_search_term" selected>Any field</option>
 					<option value="film_id">ID</option>
 					<option value="film_title">Title</option>
 
