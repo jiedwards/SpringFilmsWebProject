@@ -38,6 +38,15 @@ public class DataUtils {
 		}
 	}
 
+	public boolean filmExistsInDatabase(int filmId) {
+		Film film = filmDbUtils.getFilmById(filmId);
+
+		if (film == null) {
+			return false;
+		}
+		return true;
+	}
+	
 	public boolean isValidFilmId(String filmIdString) {
 		if (filmIdString == null) {
 			return false;
