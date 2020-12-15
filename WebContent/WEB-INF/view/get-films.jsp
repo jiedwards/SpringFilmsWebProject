@@ -14,11 +14,13 @@
 	crossorigin="anonymous">
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
-	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
- 
+<link rel="stylesheet" type="text/css"
+	href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+<script type="text/javascript" charset="utf8"
+	src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
 
@@ -30,8 +32,7 @@
 
 <title>All Movies</title>
 </head>
-<body class="bg-light"
-	onload="getAllFilmsHandler('application/json')">
+<body class="bg-light" onload="getAllFilmsHandler('application/json')">
 
 
 	<div class="container mb-2 bg-light text-dark">
@@ -83,14 +84,15 @@
 		<a href="insert-film.jsp" class="btn btn-success btn-block"><i
 			class="far fa-plus-square fa-fw"></i> Insert new movie </a> <br> <br>
 	</div>
-		
-		<div class="container-fluid">
-	
-	<table id="moviesTable" class="table table-hover table-responsive table-sm mb-2" width="100%">
-	  <thead class="thead-dark"></thead>
-	  </table>
 
-</div>
+	<div class="container-fluid">
+
+		<table id="moviesTable"
+			class="table table-hover table-responsive table-sm mb-2" width="100%">
+			<thead class="thead-dark"></thead>
+		</table>
+
+	</div>
 
 	<div class="modal fade" id="updateFilmModal" tabindex="-1"
 		role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
@@ -141,7 +143,16 @@
 								required />
 						</div>
 
-						<button type="submit" class="btn btn-primary btn-lg btn-block">Finish updating movie data</button>
+						<div class="form-group">
+							<label for="updateFilmDataFormat">in</label> <select
+								class="custom-select mr-sm-1" id="updateFilmDataFormat">
+								<option selected value="application/json">JSON format</option>
+								<option value="application/xml">XML format</option>
+							</select>
+						</div>
+
+						<button type="submit" class="btn btn-primary btn-lg btn-block">Finish
+							updating movie data</button>
 
 					</form>
 				</div>

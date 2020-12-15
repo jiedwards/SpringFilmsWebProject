@@ -20,7 +20,7 @@ public class FilmsService {
 		List<Film> listOfFilmsReturnedByDb = filmDbUtils.getAllFilms();
 
 		System.out.println("--------------------");
-		System.out.println("Request received to retrieve all films in the database in " + contentType + ".");
+		System.out.println("Request received to retrieve all films in the database in '" + contentType + "'.");
 
 		if (listOfFilmsReturnedByDb.isEmpty()) {
 			System.out.println("No movies found in the database.");
@@ -30,16 +30,13 @@ public class FilmsService {
 		Films filmsResult = new Films();
 		filmsResult.setFilmList(listOfFilmsReturnedByDb);
 
-		System.out.println("Successfully found " + listOfFilmsReturnedByDb.size() + " films to be returned.");
-		System.out.println("--------------------");
-
 		return dataUtils.convertFilmsForClientContentType(contentType, listOfFilmsReturnedByDb, filmsResult);
 	}
 
 	public ResponseEntity<?> getFilmByIdService(String contentType, String filmId) {
 
 		System.out.println("--------------------");
-		System.out.println(String.format("Request recieved to GET data by ID: '%s' in format %s", filmId, contentType));
+		System.out.println(String.format("Request recieved to GET data by ID: '%s' in format '%s'", filmId, contentType));
 
 		if (!dataUtils.isValidFilmId(filmId)) {
 			return dataUtils.failedRequestErrorMessage("No movie found due to invalid Film ID: " + filmId);
@@ -47,11 +44,13 @@ public class FilmsService {
 		}
 
 		Film film = filmDbUtils.getFilmById(Integer.parseInt(filmId));
-		System.out.println(film);
 
 		if (film == null) {
 			return dataUtils.failedRequestErrorMessage("No movie found for film ID: " + filmId);
 		}
+		
+		System.out.println("Successfully found '" + film.getTitle() + "' to be returned to client.");
+		System.out.println("--------------------");
 
 		if (contentType.equalsIgnoreCase("text/plain")) {
 			return new ResponseEntity<String>(film.toString(), HttpStatus.OK);
@@ -61,11 +60,12 @@ public class FilmsService {
 
 	}
 
-	public ResponseEntity<?> getFilmsByTitleService(String contentType, String filmTitle) {
+	
+public ResponseEntity<?> getFilmsByTitleService(String contentType, String filmTitle) {
 
 		System.out.println("--------------------");
 		System.out.println(
-				String.format("Request recieved to GET data by title: '%s' in format %s", filmTitle, contentType));
+				String.format("Request recieved to GET data by title: '%s' in format '%s'", filmTitle, contentType));
 
 		if (filmTitle.isEmpty()) {
 			return dataUtils.failedRequestErrorMessage("No movie found due invalid film title: " + filmTitle);
@@ -88,7 +88,7 @@ public class FilmsService {
 
 		System.out.println("--------------------");
 		System.out.println(
-				String.format("Request recieved to GET data by term: '%s' in format %s", searchTerm, contentType));
+				String.format("Request recieved to GET data by search term: '%s' in format '%s'", searchTerm, contentType));
 
 		if (searchTerm.isEmpty()) {
 			return dataUtils.failedRequestErrorMessage("No movie found due invalid search term: " + searchTerm);
@@ -109,7 +109,7 @@ public class FilmsService {
 	public ResponseEntity<?> insertFilm(String contentType, Film newFilm) {
 		
 		System.out.println("--------------------");
-		System.out.println(String.format("Request recieved to INSERT film with title: '%s' in format %s", newFilm.getTitle(), contentType));
+		System.out.println(String.format("Request recieved to INSERT film with title: '%s' in format '%s'", newFilm.getTitle(), contentType));
 
 		try {
 			filmDbUtils.insertFilm(newFilm);
@@ -118,6 +118,7 @@ public class FilmsService {
 		}
 
 		String resultMessage = "Successfully inserted movie with title: " + newFilm.getTitle();
+		System.out.println("--------------------");
 		System.out.println(resultMessage);
 		return new ResponseEntity<String>(resultMessage, HttpStatus.OK);
 	}
@@ -127,7 +128,7 @@ public class FilmsService {
 		int filmId = updatedFilm.getId();
 
 		System.out.println("--------------------");
-		System.out.println(String.format("Request recieved to UPDATE film with ID: '%d' in format %s", filmId, contentType));
+		System.out.println(String.format("Request recieved to UPDATE film with ID: '%d' in format '%s'", filmId, contentType));
 		
 //		Method is created to avoid an ambiguous exception being thrown when the movie isn't identified in the try/catch
 		if (!filmExistsInDatabase(filmId)) {
@@ -139,11 +140,12 @@ public class FilmsService {
 		try {
 			filmDbUtils.updateFilm(updatedFilm);
 		} catch (Exception e) {
-			resultMessage = String.format("Failed to update movie with ID: %d. Make sure the movie exists.", filmId);
+			resultMessage = String.format("Failed to update movie with ID: '%d'. Make sure the movie exists.", filmId);
 			return dataUtils.failedRequestErrorMessage(resultMessage);
 		}
 
 		resultMessage = "Successfully updated movie with ID: " + filmId;
+		System.out.println("--------------------");
 		System.out.println(resultMessage);
 		return new ResponseEntity<String>(resultMessage, HttpStatus.OK);
 	}
@@ -176,10 +178,10 @@ public class FilmsService {
 		
 		resultMessage = "Successfully deleted movie with ID: " + filmId;
 		System.out.println(resultMessage);
+		System.out.println("--------------------");
 		return new ResponseEntity<String>(resultMessage, HttpStatus.OK);
 	}
 
-//	Method is created to avoid an ambiguous exception being thrown when the movie isn't identified in the try/catch
 	private boolean filmExistsInDatabase(int filmId) {
 		Film film = filmDbUtils.getFilmById(filmId);
 

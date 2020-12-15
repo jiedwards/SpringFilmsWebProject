@@ -23,32 +23,33 @@ public class FilmsController {
 	}
 	
 	@RequestMapping(value = "/get-films", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE } )
-	public ResponseEntity<?> getAllFilms(@RequestHeader("Content-Type") String contentType, Model model) {
+	public ResponseEntity<?> getAllFilms(@RequestParam("dataFormat") String dataFormat, Model model) {
 		
-		return filmService.getAllFilmsService(contentType);
+		return filmService.getAllFilmsService(dataFormat);
 	}
 
 	@RequestMapping(value = "/get-film-by-id", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE } )
-	public ResponseEntity<?> getFilmById(@RequestHeader("Content-Type") String contentType, @RequestParam("film_id") String filmId) {
+	public ResponseEntity<?> getFilmById(@RequestParam("dataFormat") String dataFormat, @RequestParam("film_id") String filmId) {
 		
-		return filmService.getFilmByIdService(contentType, filmId);
+		return filmService.getFilmByIdService(dataFormat, filmId);
 	}
 	
 	@RequestMapping(value = "/get-films-by-title", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE } )
-	public ResponseEntity<?> getFilmByTitle(@RequestHeader("Content-Type") String contentType, @RequestParam("film_title") String filmId) {
+	public ResponseEntity<?> getFilmByTitle(@RequestParam("dataFormat") String dataFormat, @RequestParam("film_title") String filmTitle) {
 		
-		return filmService.getFilmsByTitleService(contentType, filmId);
+		return filmService.getFilmsByTitleService(dataFormat, filmTitle);
 	}
 	
 	@RequestMapping(value = "/get-films-by-any-term", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE } )
-	public ResponseEntity<?> getFilmByAnyTerm(@RequestHeader("Content-Type") String contentType, @RequestParam("any_search_term") String searchTerm) {
+	public ResponseEntity<?> getFilmByAnyTerm(@RequestParam("dataFormat") String dataFormat, @RequestParam("any_search_term") String searchTerm) {
 		
-		return filmService.getFilmsByAnyTermService(contentType, searchTerm);
+		return filmService.getFilmsByAnyTermService(dataFormat, searchTerm);
 	}
 	
 	@RequestMapping(value = "/insert-film", method = RequestMethod.POST, consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE } )
 	public ResponseEntity<?> insertFilm(@RequestHeader("Content-Type") String contentType, @RequestBody Film film) {
 		System.out.println(film);
+		System.out.println(contentType);
 		return filmService.insertFilm(contentType, film);
 	}
 
@@ -63,6 +64,4 @@ public class FilmsController {
 		
 		return filmService.deleteFilmByIdService(filmId);
 	}
-	
-	
 }

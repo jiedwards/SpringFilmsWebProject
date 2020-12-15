@@ -24,10 +24,14 @@ public class DataUtils {
 		return outputString;
 	}
 
-	public ResponseEntity<?> convertFilmsForClientContentType(String contentType, List<Film> allFilmsSearchedByTitle,
+	public ResponseEntity<?> convertFilmsForClientContentType(String contentType, List<Film> listOfFilmsReturnedByDb,
 			Films filmsResult) {
+		
+		System.out.println("Successfully found " + listOfFilmsReturnedByDb.size() + " films to be returned.");
+		System.out.println("--------------------");
+		
 		if (contentType.equalsIgnoreCase("text/plain")) {
-			return new ResponseEntity<String>(DataUtils.convertJavaPOJOToString(allFilmsSearchedByTitle),
+			return new ResponseEntity<String>(DataUtils.convertJavaPOJOToString(listOfFilmsReturnedByDb),
 					HttpStatus.OK);
 		} else {
 			return new ResponseEntity<Films>(filmsResult, HttpStatus.OK);

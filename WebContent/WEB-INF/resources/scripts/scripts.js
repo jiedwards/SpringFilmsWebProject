@@ -7,7 +7,7 @@ var dataTypeToParserDict = {
 	'application/json': parseJsonAPIResponse
 }
 $(document).keypress(
-	function (event) {
+	function(event) {
 		if (event.which == '13') {
 			event.preventDefault();
 		}
@@ -75,7 +75,7 @@ function getRequestHandler(address, dataType) {
 			Accept: dataType,
 			"Content-Type": dataType
 		},
-		success: function (response, status, xhr) {
+		success: function(response, status, xhr) {
 			// No content returned from server
 			if (xhr.status == 404) {
 				errorAlertBox(response);
@@ -83,19 +83,20 @@ function getRequestHandler(address, dataType) {
 				getRequestParser(response);
 			}
 		},
-		error: function (response) {
+		error: function(response) {
 			errorAlertBox(response.responseText);
 		}
 	})
 }
 
 function editFilm(filmId) {
-	var address = "get-film-by-id?film_id=" + filmId;
+	var dataFormat = document.getElementById("updateFilmDataFormat").value;
+	var address = "get-film-by-id?dataFormat=" + dataFormat + "&film_id=" + filmId;
 
 	//Get by ID request and populate form using Fetch API.
 	fetch(address, {
 		headers: {
-			'Content-Type': 'application/json',
+			'Content-Type': dataFormat,
 		}
 	}).then(response => response.json())
 		.then(film => {
@@ -114,24 +115,25 @@ function updateFilm() {
 
 	if (filmUpdateConfirmed) {
 
+		var dataType = document.getElementById("updateFilmDataFormat").value;
 		var elements = document.getElementById("updateFilmForm").elements;
-		var filmAttributes = {};
-		for (var i = 0; i < elements.length - 1; i++) {
-			var item = elements.item(i);
-			filmAttributes[item.name] = item.value;
-		}
+		var filmResult;
 
-		console.log(JSON.stringify(filmAttributes));
+		if (dataType == "application/json") {
+			filmResult = generateJsonFilmObject(elements);
+		} else if (dataType == "application/xml") {
+			filmResult = generateXmlFilmObject(elements);
+		}
 
 		$.ajax({
 			url: 'update-film',
 			type: 'PUT',
-			data: JSON.stringify(filmAttributes),
-			contentType: 'application/json',
-			success: function (data) {
+			data: filmResult,
+			contentType: dataType,
+			success: function(data) {
 				successfulAlertBox(data);
 			},
-			error: function (data) {
+			error: function(data) {
 				errorAlertBox(data);
 			}
 		});
@@ -140,31 +142,56 @@ function updateFilm() {
 
 function insertFilm() {
 
-	var dataType = document.getElementById("insertFilmDataFormat").value;
-	var elements = document.getElementById("insertFilmForm").elements;
-	var filmAttributes = {};
-
-	for (var i = 0; i < elements.length - 2; i++) {
-		var item = elements.item(i);
-		filmAttributes[item.name] = item.value;
-	}
-
-	console.log(JSON.stringify(filmAttributes));
-	var filmInsertConfirmed = confirm('Are you sure you want to insert ' + filmAttributes.title + '?');
+	var filmInsertConfirmed = confirm('Are you sure you want to insert this film?');
 
 	if (filmInsertConfirmed) {
+
+		var dataType = document.getElementById("insertFilmDataFormat").value;
+		var elements = document.getElementById("insertFilmForm").elements;
+		var filmResult;
+
+		if (dataType == "application/json") {
+			filmResult = generateJsonFilmObject(elements);
+		} else if (dataType == "application/xml") {
+			filmResult = generateXmlFilmObject(elements);
+		}
+
 		$.post({
 			url: 'insert-film',
-			data: JSON.stringify(filmAttributes),
+			data: filmResult,
 			contentType: dataType,
-			success: function (data) {
+			success: function(data) {
 				successfulAlertBox(data);
 			},
-			error: function (data) {
+			error: function(data) {
 				errorAlertBox(data);
 			}
 		})
 	}
+}
+
+function generateJsonFilmObject(elements) {
+	var jsonObject = {};
+
+	for (var i = 0; i < elements.length - 2; i++) {
+		var item = elements.item(i);
+		jsonObject[item.name] = item.value;
+	}
+	return JSON.stringify(jsonObject);
+}
+
+function generateXmlFilmObject(elements) {
+	var xmlObject = document.implementation.createDocument("", "", null);
+	var filmElement = xmlObject.createElement("film");
+
+	for (var i = 0; i < elements.length - 2; i++) {
+		var item = elements.item(i);
+		var filmAttribute = xmlObject.createElement(item.name);
+		filmAttribute.textContent = item.value;
+		filmElement.append(filmAttribute);
+	}
+	xmlObject.append(filmElement);
+	return new XMLSerializer().serializeToString(xmlObject);
 }
 
 function deleteFilm(filmId) {
@@ -174,10 +201,10 @@ function deleteFilm(filmId) {
 		$.ajax({
 			url: 'delete-film?film_id=' + filmId,
 			type: 'DELETE',
-			success: function (data) {
+			success: function(data) {
 				successfulAlertBox(data);
 			},
-			error: function (data) {
+			error: function(data) {
 				errorAlertBox(data);
 			}
 		});
@@ -185,12 +212,19 @@ function deleteFilm(filmId) {
 }
 
 function parseXmlAPIResponse(data) {
-	var films = data.getElementsByTagName("film");
 	var rowData = new Array();
-	for (var i = 0; i < films.length; i++) {
-		var subElementNames = ["id", "title", "year", "director", "stars", "review"];
-		var film = films[i];
-		rowData[i] = getElementValues(film, subElementNames);
+	var $films = $(data).find("film");
+
+	for (var i = 0; i < $films.length; i++) {
+		var film = $films[i];
+		var id = $(film).find('id').text(),
+			title = $(film).find('title').text(),
+			year = $(film).find('year').text(),
+			director = $(film).find('director').text(),
+			stars = $(film).find('stars').text(),
+			review = $(film).find('review').text();
+
+		rowData[i] = [id, title, year, director, stars, review];
 	}
 	generateTable(rowData);
 }
@@ -207,12 +241,22 @@ function parseStringAPIResponse(data) {
 }
 
 function parseJsonAPIResponse(data) {
-	var films = data.filmList;
 	var rowData = new Array();
-	for (var i = 0; i < films.length; i++) {
-		var film = films[i];
-		rowData[i] = [film.id, film.title,
+
+	//The conditional statement below verifies whether an array of films has been retrieved from the server,
+	// or a single Film.
+	if (data.hasOwnProperty('id')) {
+		let film = data;
+		rowData[0] = [film.id, film.title,
 		film.year, film.director, film.stars, film.review];
+	} else {
+		var films = data.filmList;
+		var rowData = new Array();
+		for (var i = 0; i < films.length; i++) {
+			var film = films[i];
+			rowData[i] = [film.id, film.title,
+			film.year, film.director, film.stars, film.review];
+		}
 	}
 	generateTable(rowData);
 }
@@ -234,7 +278,7 @@ function generateTable(data) {
 				data: null,
 				title: "Options",
 				className: "center",
-				render: function (data, type, row) {
+				render: function(data, type, row) {
 
 					let filmId = data[0];
 
@@ -244,67 +288,4 @@ function generateTable(data) {
 			}
 		]
 	});
-}
-
-function getElementValues(element, subElementNames) {
-	var values = new Array(subElementNames.length);
-	for (var i = 0; i < subElementNames.length; i++) {
-		var name = subElementNames[i];
-		var subElement = element.getElementsByTagName(name)[0];
-		values[i] = getBodyContent(subElement);
-	}
-	return (values);
-}
-
-function getTable(headings, tableData) {
-	var table = "<table border='1' id='movie-table-data' class='ajaxTable table table-hover .table-responsive table-sm mb-2'>\n" +
-		getTableHeadings(headings) +
-		getTableBody(tableData) +
-		"</table>";
-	return (table);
-}
-
-function getTableHeadings(headings) {
-	var firstRow = "<thead class='thead-dark'>  <tr>";
-	for (var i = 0; i < headings.length; i++) {
-		firstRow += "<th scope='col'>" + headings[i] + "</th>";
-	}
-	firstRow += "</tr></thead>\n";
-	return (firstRow);
-}
-
-function getTableBody(tableData) {
-	var body = "";
-	for (var i = 0; i < tableData.length; i++) {
-		body += "  <tr id='table-row'>";
-		var rowData = tableData[i];
-		for (property in rowData) {
-			body += "<td>" + rowData[property] + "</td>";
-		}
-
-		// Ensures that the filmId value is identified whether the response is in JSON, XML or String 
-		var filmId = rowData.id;
-		if (filmId == undefined) {
-			filmId = rowData[0];
-		}
-		body += "<td><a class='btn btn-md btn-warning btn-block' data-toggle='modal' data-target='#updateFilmModal' onclick='editFilm(name)' name=" + filmId + " id='editFilmButton'><i class='fas fa-edit'></i></a>" +
-			"<button type='submit' class='btn btn-md btn-danger btn-block' id='deleteFilmButton' onclick='deleteFilm(value)' name='filmId' value=" + filmId + "><i class='far fa-trash-alt'/></button></td>"
-		body += "</tr>\n";
-	}
-	return (body);
-}
-
-function getBodyContent(element) {
-	element.normalize();
-	return (element.childNodes[0].nodeValue);
-}
-
-function getXmlValues(xmlDocument, xmlElementName) {
-	var elementArray =
-		xmlDocument.getElementsByTagName(xmlElementName);
-	var valueArray = new Array();
-	for (var i = 0; i < elementArray.length; i++) {
-		valueArray[i] = getBodyContent(elementArray[i]);
-	}
-	return (valueArray);
 }
