@@ -7,7 +7,7 @@ var dataTypeToParserDict = {
 	'application/json': parseJsonAPIResponse
 }
 $(document).keypress(
-	function(event) {
+	function (event) {
 		if (event.which == '13') {
 			event.preventDefault();
 		}
@@ -75,7 +75,7 @@ function getRequestHandler(address, dataType) {
 			Accept: dataType,
 			"Content-Type": dataType
 		},
-		success: function(response, status, xhr) {
+		success: function (response, status, xhr) {
 			// No content returned from server
 			if (xhr.status == 404) {
 				errorAlertBox(response);
@@ -83,7 +83,7 @@ function getRequestHandler(address, dataType) {
 				getRequestParser(response);
 			}
 		},
-		error: function(response) {
+		error: function (response) {
 			errorAlertBox(response.responseText);
 		}
 	})
@@ -130,10 +130,10 @@ function updateFilm() {
 			type: 'PUT',
 			data: filmResult,
 			contentType: dataType,
-			success: function(data) {
+			success: function (data) {
 				successfulAlertBox(data);
 			},
-			error: function(data) {
+			error: function (data) {
 				errorAlertBox(data);
 			}
 		});
@@ -160,11 +160,11 @@ function insertFilm() {
 			url: 'insert-film',
 			data: filmResult,
 			contentType: dataType,
-			success: function(data) {
+			success: function (data) {
 				successfulAlertBox(data);
 			},
-			error: function(data) {
-				errorAlertBox(data);
+			error: function (data) {
+				errorAlertBox(data.responseText);
 			}
 		})
 	}
@@ -201,10 +201,10 @@ function deleteFilm(filmId) {
 		$.ajax({
 			url: 'delete-film?film_id=' + filmId,
 			type: 'DELETE',
-			success: function(data) {
+			success: function (data) {
 				successfulAlertBox(data);
 			},
-			error: function(data) {
+			error: function (data) {
 				errorAlertBox(data);
 			}
 		});
@@ -215,8 +215,7 @@ function parseXmlAPIResponse(data) {
 	var rowData = new Array();
 	var $films = $(data).find("film");
 
-	for (var i = 0; i < $films.length; i++) {
-		var film = $films[i];
+	for (film of $films) {
 		var id = $(film).find('id').text(),
 			title = $(film).find('title').text(),
 			year = $(film).find('year').text(),
@@ -224,7 +223,7 @@ function parseXmlAPIResponse(data) {
 			stars = $(film).find('stars').text(),
 			review = $(film).find('review').text();
 
-		rowData[i] = [id, title, year, director, stars, review];
+		rowData.push([id, title, year, director, stars, review]);
 	}
 	generateTable(rowData);
 }
@@ -232,9 +231,9 @@ function parseXmlAPIResponse(data) {
 function parseStringAPIResponse(data) {
 	var films = data.split(/\n+/);
 	var rowData = new Array();
-	for (var i = 0; i < films.length; i++) {
-		if (films[i].length >= 1) {
-			rowData.push(films[i].split("#"));
+	for (film of films) {
+		if (film.length >= 1) {
+			rowData.push(film.split("#"));
 		}
 	}
 	generateTable(rowData);
@@ -252,10 +251,10 @@ function parseJsonAPIResponse(data) {
 	} else {
 		var films = data.filmList;
 		var rowData = new Array();
-		for (var i = 0; i < films.length; i++) {
-			var film = films[i];
-			rowData[i] = [film.id, film.title,
-			film.year, film.director, film.stars, film.review];
+
+		for (film of films) {
+			rowData.push([film.id, film.title,
+			film.year, film.director, film.stars, film.review]);
 		}
 	}
 	generateTable(rowData);
@@ -278,7 +277,7 @@ function generateTable(data) {
 				data: null,
 				title: "Options",
 				className: "center",
-				render: function(data, type, row) {
+				render: function (data, type, row) {
 
 					let filmId = data[0];
 

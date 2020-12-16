@@ -1,18 +1,19 @@
-package main.com.utils;
+package com.filmproject.utils;
 
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import main.com.model.Film;
-import main.com.model.Films;
+import com.filmproject.model.Film;
+import com.filmproject.model.Films;
 
 
 public class DataUtils {
 	    
-    public ResponseEntity<?> failedRequestErrorMessage(String errorMessage) {
+    public ResponseEntity<?> failedRequestError(String errorMessage) {
 		System.out.println(errorMessage);
+		System.out.println("--------------------");
 		return new ResponseEntity<String>(errorMessage, HttpStatus.NOT_FOUND);
 	}
 	
@@ -37,15 +38,6 @@ public class DataUtils {
 			return new ResponseEntity<Films>(filmsResult, HttpStatus.OK);
 		}
 	}
-
-	public boolean filmExistsInDatabase(int filmId) {
-		Film film = filmDbUtils.getFilmById(filmId);
-
-		if (film == null) {
-			return false;
-		}
-		return true;
-	}
 	
 	public boolean isValidFilmId(String filmIdString) {
 		if (filmIdString == null) {
@@ -58,4 +50,19 @@ public class DataUtils {
 		}
 		return true;
 	}
+	
+	public boolean isFilmNullOrEmpty(Film film) {
+
+		if (film.getTitle().isEmpty() || film.getTitle() == null) {
+			return true;
+		} else if (film.getDirector().isEmpty() || film.getDirector() == null) {
+			return true;
+		} else if (film.getStars().isEmpty() || film.getStars() == null) {
+			return true;
+		} else if (film.getReview().isEmpty() || film.getReview() == null) {
+			return true;
+		}
+	
+        return false;
+    }
 }

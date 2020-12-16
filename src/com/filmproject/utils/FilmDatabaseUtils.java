@@ -1,4 +1,4 @@
-package main.com.utils;
+package com.filmproject.utils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,7 +12,8 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.criterion.Restrictions;
 
-import main.com.model.Film;
+import com.filmproject.model.Film;
+
 
 public class FilmDatabaseUtils {
 

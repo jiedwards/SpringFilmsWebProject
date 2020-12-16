@@ -81,7 +81,7 @@
 
 	<div class="container mb-2 bg-light text-dark">
 
-		<a href="insert-film.jsp" class="btn btn-success btn-block"><i
+		<a href="insert-film" class="btn btn-success btn-block"><i
 			class="far fa-plus-square fa-fw"></i> Insert new movie </a> <br> <br>
 	</div>
 

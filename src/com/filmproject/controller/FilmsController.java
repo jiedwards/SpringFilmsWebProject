@@ -1,4 +1,4 @@
-package main.com.controllers;
+package com.filmproject.controller;
 
 import java.util.List;
 
@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import main.com.model.Film;
-import main.com.model.Films;
-import main.com.utils.DataUtils;
-import main.com.utils.FilmDatabaseUtils;
-import main.com.interfaces.FilmsInterface;
+import com.filmproject.interfaces.FilmsInterface;
+import com.filmproject.model.Film;
+import com.filmproject.model.Films;
+import com.filmproject.utils.DataUtils;
+import com.filmproject.utils.FilmDatabaseUtils;
 
 @Controller
 public class FilmsController implements FilmsInterface {
@@ -24,6 +24,11 @@ public class FilmsController implements FilmsInterface {
 	@Override
 	public String homePage() {
 		return "get-films";
+	}
+
+	@Override
+	public String insertFilmPage() {
+		return "insert-film";
 	}
 
 	@Override
@@ -43,7 +48,7 @@ public class FilmsController implements FilmsInterface {
 		filmsResult.setFilmList(listOfFilmsReturnedByDb);
 
 		return dataUtils.convertFilmsForClientContentType(dataFormat, listOfFilmsReturnedByDb, filmsResult);
-		
+
 	}
 
 	@Override
@@ -54,14 +59,14 @@ public class FilmsController implements FilmsInterface {
 		System.out.println(String.format("Request recieved to GET data by ID: '%s' in format '%s'", filmId, dataFormat));
 
 		if (!dataUtils.isValidFilmId(filmId)) {
-			return dataUtils.failedRequestErrorMessage("No movie found due to invalid Film ID: " + filmId);
+			return dataUtils.failedRequestError("No movie found due to invalid Film ID: " + filmId);
 
 		}
 
 		Film film = filmDbUtils.getFilmById(Integer.parseInt(filmId));
 
 		if (film == null) {
-			return dataUtils.failedRequestErrorMessage("No movie found for film ID: " + filmId);
+			return dataUtils.failedRequestError("No movie found for film ID: " + filmId);
 		}
 		
 		System.out.println("Successfully found '" + film.getTitle() + "' to be returned to client.");
@@ -83,13 +88,13 @@ public class FilmsController implements FilmsInterface {
 				String.format("Request recieved to GET data by title: '%s' in format '%s'", filmTitle, dataFormat));
 
 		if (filmTitle.isEmpty()) {
-			return dataUtils.failedRequestErrorMessage("No movie found due invalid film title: " + filmTitle);
+			return dataUtils.failedRequestError("No movie found due invalid film title: " + filmTitle);
 		}
 
 		List<Film> listOfFilmsReturnedByDb = filmDbUtils.getFilmsByTitle(filmTitle);
 
 		if (listOfFilmsReturnedByDb.isEmpty()) {
-			return dataUtils.failedRequestErrorMessage("No movie matches found for: " + filmTitle);
+			return dataUtils.failedRequestError("No movie matches found for: " + filmTitle);
 		}
 
 		Films filmsResult = new Films();
@@ -108,13 +113,13 @@ public class FilmsController implements FilmsInterface {
 				String.format("Request recieved to GET data by search term: '%s' in format '%s'", searchTerm, dataFormat));
 
 		if (searchTerm.isEmpty()) {
-			return dataUtils.failedRequestErrorMessage("No movie found due invalid search term: " + searchTerm);
+			return dataUtils.failedRequestError("No movie found due invalid search term: " + searchTerm);
 		}
 
 		List<Film> listOfFilmsReturnedByDb = filmDbUtils.getFilmsByAnyTerm(searchTerm);
 
 		if (listOfFilmsReturnedByDb.isEmpty()) {
-			return dataUtils.failedRequestErrorMessage("No movie matches found for: " + searchTerm);
+			return dataUtils.failedRequestError("No movie matches found for: " + searchTerm);
 		}
 
 		Films filmsResult = new Films();
@@ -129,10 +134,14 @@ public class FilmsController implements FilmsInterface {
 		System.out.println("--------------------");
 		System.out.println(String.format("Request recieved to INSERT film with title: '%s' in format '%s'", newFilm.getTitle(), contentType));
 
+		if (newFilm.isEmpty()) {
+			return dataUtils.failedRequestError("Failed to insert movie as some fields are missing.");
+		}
+		
 		try {
 			filmDbUtils.insertFilm(newFilm);
 		} catch (Exception e) {
-			return dataUtils.failedRequestErrorMessage("Failed to insert movie with title: " + newFilm.getTitle());
+			return dataUtils.failedRequestError("Failed to insert movie with title: " + newFilm.getTitle());
 		}
 
 		String resultMessage = "Successfully inserted movie with title: " + newFilm.getTitle();
@@ -150,7 +159,7 @@ public class FilmsController implements FilmsInterface {
 		
 //		Method is created to avoid an ambiguous exception being thrown when the movie isn't identified in the try/catch
 		if (!filmExistsInDatabase(filmId)) {
-			return dataUtils.failedRequestErrorMessage("No movie found with Film ID: " + filmId);
+			return dataUtils.failedRequestError("No movie found with Film ID: " + filmId);
 		}
 
 		String resultMessage = "";
@@ -159,7 +168,7 @@ public class FilmsController implements FilmsInterface {
 			filmDbUtils.updateFilm(updatedFilm);
 		} catch (Exception e) {
 			resultMessage = String.format("Failed to update movie with ID: '%d'. Make sure the movie exists.", filmId);
-			return dataUtils.failedRequestErrorMessage(resultMessage);
+			return dataUtils.failedRequestError(resultMessage);
 		}
 
 		resultMessage = "Successfully updated movie with ID: " + filmId;
@@ -176,14 +185,14 @@ public class FilmsController implements FilmsInterface {
 
 		String resultMessage = "";
 		if (!dataUtils.isValidFilmId(filmIdString)) {
-			return dataUtils.failedRequestErrorMessage("No movie found to delete due to invalid Film ID: " + filmIdString);
+			return dataUtils.failedRequestError("No movie found to delete due to invalid Film ID: " + filmIdString);
 		}
 
 		int filmId = Integer.parseInt(filmIdString);
 
 //		Method is created to avoid an ambiguous exception being thrown when the movie isn't identified in the try/catch
 		if (!filmExistsInDatabase(filmId)) {
-			return dataUtils.failedRequestErrorMessage("No movie found with Film ID: " + filmId);
+			return dataUtils.failedRequestError("No movie found with Film ID: " + filmId);
 		}
 
 		try {
@@ -191,7 +200,7 @@ public class FilmsController implements FilmsInterface {
 		} catch (Exception e) {
 			resultMessage = String.format("Failed to delete movie with ID: %d. Make sure the movie exists.", filmId);
 			e.printStackTrace();
-			return dataUtils.failedRequestErrorMessage(resultMessage);
+			return dataUtils.failedRequestError(resultMessage);
 		}
 		
 		resultMessage = "Successfully deleted movie with ID: " + filmId;
@@ -199,7 +208,7 @@ public class FilmsController implements FilmsInterface {
 		System.out.println("--------------------");
 		return new ResponseEntity<String>(resultMessage, HttpStatus.OK);
 	}
-
+	
 	private boolean filmExistsInDatabase(int filmId) {
 		Film film = filmDbUtils.getFilmById(filmId);
 
