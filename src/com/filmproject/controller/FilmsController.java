@@ -152,7 +152,7 @@ public class FilmsController implements FilmsInterface {
 
 	@Override
 	public ResponseEntity<?> updateFilm(@RequestHeader("Content-Type") String contentType, @RequestBody Film updatedFilm) {
-		int filmId = updatedFilm.getId();
+		int filmId = Integer.valueOf(updatedFilm.getId());
 
 		System.out.println("--------------------");
 		System.out.println(String.format("Request recieved to UPDATE film with ID: '%d' in format '%s'", filmId, contentType));
@@ -165,9 +165,11 @@ public class FilmsController implements FilmsInterface {
 		String resultMessage = "";
 
 		try {
-			filmDbUtils.updateFilm(updatedFilm);
+			System.out.println(updatedFilm);
+			filmDbUtils.updateFilm(filmId, updatedFilm);
 		} catch (Exception e) {
 			resultMessage = String.format("Failed to update movie with ID: '%d'. Make sure the movie exists.", filmId);
+			e.printStackTrace();
 			return dataUtils.failedRequestError(resultMessage);
 		}
 
@@ -210,6 +212,8 @@ public class FilmsController implements FilmsInterface {
 	}
 	
 	private boolean filmExistsInDatabase(int filmId) {
+		
+		System.out.println("Verifying whether film with ID: " + filmId + " exists in database.");
 		Film film = filmDbUtils.getFilmById(filmId);
 
 		if (film == null) {

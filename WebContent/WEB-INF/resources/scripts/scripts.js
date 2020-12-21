@@ -34,9 +34,9 @@ function errorAlertBox(message) {
 
 function filmSearchHandler(searchOptionType, searchTerm, searchFieldDataFormat) {
 
-	var searchOption = document.getElementById(searchOptionType).value;
-	var searchTerm = document.getElementById(searchTerm).value;
-	var dataFormat = document.getElementById(searchFieldDataFormat).value;
+	var searchOption = $('#' + searchOptionType).val();
+	var searchTerm = $('#' + searchTerm).val();
+	var dataFormat = $('#' + searchFieldDataFormat).val();
 	var requestAddress = '';
 
 	if (searchTerm == '') {
@@ -90,7 +90,7 @@ function getRequestHandler(address, dataType) {
 }
 
 function editFilm(filmId) {
-	var dataFormat = document.getElementById("updateFilmDataFormat").value;
+	var dataFormat = $('#updateFilmDataFormat').val();
 	var address = "get-film-by-id?dataFormat=" + dataFormat + "&film_id=" + filmId;
 
 	//Get by ID request and populate form using Fetch API.
@@ -100,12 +100,12 @@ function editFilm(filmId) {
 		}
 	}).then(response => response.json())
 		.then(film => {
-			document.getElementById('update_film_id').value = film.id;
-			document.getElementById('update_film_title').value = film.title;
-			document.getElementById('update_film_director').value = film.director;
-			document.getElementById('update_film_year').value = film.year;
-			document.getElementById('update_film_stars').value = film.stars;
-			document.getElementById('update_film_review').value = film.review;
+			$('#update_film_id').val(film.id);
+			$('#update_film_title').val(film.title);
+			$('#update_film_director').val(film.director);
+			$('#update_film_year').val(film.year);
+			$('#update_film_stars').val(film.stars);
+			$('#update_film_review').val(film.review);
 		});
 }
 
@@ -118,13 +118,15 @@ function updateFilm() {
 		var dataType = document.getElementById("updateFilmDataFormat").value;
 		var elements = document.getElementById("updateFilmForm").elements;
 		var filmResult;
-
+		
 		if (dataType == "application/json") {
 			filmResult = generateJsonFilmObject(elements);
 		} else if (dataType == "application/xml") {
 			filmResult = generateXmlFilmObject(elements);
 		}
 
+		console.log(filmResult);
+		
 		$.ajax({
 			url: 'update-film',
 			type: 'PUT',
@@ -146,7 +148,7 @@ function insertFilm() {
 
 	if (filmInsertConfirmed) {
 
-		var dataType = document.getElementById("insertFilmDataFormat").value;
+		var dataType = $('#insertFilmDataFormat').val();
 		var elements = document.getElementById("insertFilmForm").elements;
 		var filmResult;
 

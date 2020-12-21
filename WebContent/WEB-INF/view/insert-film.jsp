@@ -44,7 +44,7 @@
 
 		<h1>Insert a film</h1>
 
-		<form id='insertFilmForm' onclick="insertFilm(); return false">
+		<form id='insertFilmForm' onsubmit="insertFilm(); return false">
 
 			<div class="form-group">
 				<input type="hidden" class="form-control" id="update_film_id"

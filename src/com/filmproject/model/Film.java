@@ -36,23 +36,18 @@ public class Film {
    @Column(name="id")
    int id;
    
-   @NotEmpty(message = "Title cannot be empty")
    @Column(name="title")
    String title;
    
-   @NotEmpty(message = "Year cannot be empty")
    @Column(name="year")
    int year;
    
-   @NotEmpty(message = "Director cannot be empty")
    @Column(name="director")
    String director;
    
-   @NotEmpty(message = "Stars cannot be empty")
    @Column(name="stars")
    String stars;
    
-   @NotEmpty(message = "Review cannot be empty")
    @Column(name="review")
    String review;
 

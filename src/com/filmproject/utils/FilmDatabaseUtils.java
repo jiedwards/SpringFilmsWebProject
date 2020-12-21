@@ -174,14 +174,14 @@ public class FilmDatabaseUtils {
 		return filmResultList;
 	}
 
-	public boolean updateFilm(Film updatedFilm) {
+	public boolean updateFilm(int filmId, Film updatedFilm) {
 		Session session = generateFactorySession().openSession();
 		Transaction tx = null;
 		Boolean successfulOperation = false;
 
 		try {
 			tx = session.beginTransaction();
-			Film film = (Film) session.get(Film.class, updatedFilm.getId());
+			Film film = (Film) session.get(Film.class, filmId);
 			film.setTitle(updatedFilm.getTitle());
 			film.setYear(updatedFilm.getYear());
 			film.setDirector(updatedFilm.getDirector());
