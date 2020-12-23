@@ -38,31 +38,4 @@ public class DataUtils {
 			return new ResponseEntity<Films>(filmsResult, HttpStatus.OK);
 		}
 	}
-	
-	public boolean isValidFilmId(String filmIdString) {
-		if (filmIdString == null) {
-			return false;
-		}
-		try {
-			int filmId = Integer.parseInt(filmIdString);
-		} catch (NumberFormatException nfe) {
-			return false;
-		}
-		return true;
-	}
-	
-	public boolean isFilmNullOrEmpty(Film film) {
-
-		if (film.getTitle().isEmpty() || film.getTitle() == null) {
-			return true;
-		} else if (film.getDirector().isEmpty() || film.getDirector() == null) {
-			return true;
-		} else if (film.getStars().isEmpty() || film.getStars() == null) {
-			return true;
-		} else if (film.getReview().isEmpty() || film.getReview() == null) {
-			return true;
-		}
-	
-        return false;
-    }
 }

@@ -1,0 +1,46 @@
+package com.filmproject.controller;
+
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.filmproject.model.Film;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+public interface FilmsControllerInterface {
+	
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public String homePage();
+	
+	@RequestMapping(value = "/insert-film", method = RequestMethod.GET)
+	public String insertFilmPage();
+	
+	@RequestMapping(value = "/films", method = RequestMethod.GET )
+	public ResponseEntity<?> getAllFilms(@RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType);
+
+	@RequestMapping(value = "/films/{filmId}", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE })
+	public ResponseEntity<?> getFilmById(@RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType, @PathVariable int filmId);
+	
+	@RequestMapping(value = "/films-by-title/{searchTerm}", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE } )
+	public ResponseEntity<?> getFilmByTitle(@RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType, @PathVariable String searchTerm);
+	
+	@RequestMapping(value = "/films-by-any-term/{searchTerm}", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE } )
+	public ResponseEntity<?> getFilmByAnyTerm(@RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType,  @PathVariable String searchTerm);
+	
+	@RequestMapping(value = "/films", method = RequestMethod.POST, consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE } )
+	public ResponseEntity<?> insertFilm(@RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType, @RequestBody Film film);
+
+	@RequestMapping(value = "/films/{filmId}", method = RequestMethod.PUT, consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE } )
+	public ResponseEntity<?> updateFilm(@RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType, @PathVariable int filmId, @RequestBody Film film);
+	
+	@RequestMapping(value = "/films/{filmId}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteFilmById(@PathVariable int filmId);
+}

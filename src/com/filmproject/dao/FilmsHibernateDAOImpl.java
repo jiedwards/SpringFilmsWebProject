@@ -1,4 +1,4 @@
-package com.filmproject.utils;
+package com.filmproject.dao;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,7 +15,10 @@ import org.hibernate.criterion.Restrictions;
 import com.filmproject.model.Film;
 
 
-public class FilmDatabaseUtils {
+public class FilmsHibernateDAOImpl implements FilmsDAO {
+
+    public FilmsHibernateDAOImpl() {
+    }
 
 	private static SessionFactory generateFactorySession() {
 		SessionFactory sessionFactory = null;
@@ -111,7 +114,6 @@ public class FilmDatabaseUtils {
 							.add(Restrictions.like("title", "%" + queryTerm + "%")))
 					.list();
 
-			System.out.println(queryResult);
 			for (Iterator iterator = queryResult.iterator(); iterator.hasNext();) {
 				Film film = (Film) iterator.next();
 				filmResultList.add(film);

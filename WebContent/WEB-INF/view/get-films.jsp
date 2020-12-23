@@ -28,11 +28,13 @@
 	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
 <script
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-<script src="./resources/scripts/scripts.js" type="text/javascript"></script>
+<script src="./resources/scripts/data-utils.js" type="text/javascript"></script>
+<script src="./resources/scripts/request-utils.js" type="text/javascript"></script>
+
 
 <title>All Movies</title>
 </head>
-<body class="bg-light" onload="getAllFilmsHandler('application/json')">
+<body class="bg-light" onload="getRequestHandler('films', 'application/json')">
 
 
 	<div class="container mb-2 bg-light text-dark">

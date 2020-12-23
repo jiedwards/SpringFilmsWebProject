@@ -12,20 +12,20 @@
         http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
 
 	<context:component-scan
-		base-package="com.filmproject.interfaces">
+		base-package="com.filmproject.controller">
 	</context:component-scan>
 
+<!-- 	<bean class="com.filmproject.controller.FilmsController"/>
+ -->
 	<mvc:annotation-driven />
-
-	<bean class="com.filmproject.controller.FilmsController" />
 
 	<mvc:interceptors>
 		<bean id="webContentInterceptor"
 			class="org.springframework.web.servlet.mvc.WebContentInterceptor">
 			<property name="cacheSeconds" value="0" />
-			<property name="useExpiresHeader" value="true" />
-			<property name="useCacheControlHeader" value="true" />
-			<property name="useCacheControlNoStore" value="true" />
+			<property name="useExpiresHeader" value="true"/>
+			<property name="useCacheControlHeader" value="true"/>
+			<property name="useCacheControlNoStore" value="true"></property>
 		</bean>
 	</mvc:interceptors>
 
