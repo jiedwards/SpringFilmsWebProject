@@ -75,22 +75,22 @@ public class FilmsController implements FilmsControllerInterface {
 	}
 
 	@Override
-	public ResponseEntity<?> getFilmByTitle(
+	public ResponseEntity<?> getFilmsByTitle(
 			@RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType,
-			@PathVariable String searchTerm) {
+			@PathVariable String filmTitle) {
 
 		System.out.println("--------------------");
 		System.out.println(
-				String.format("Request recieved to GET data by title: '%s' in format '%s'", searchTerm, contentType));
+				String.format("Request recieved to GET data by title: '%s' in format '%s'", filmTitle, contentType));
 
-		if (searchTerm.isEmpty()) {
-			return dataUtils.failedRequestError("No movie found due invalid film title: " + searchTerm);
+		if (filmTitle.isEmpty()) {
+			return dataUtils.failedRequestError("No movie found due invalid film title: " + filmTitle);
 		}
 
-		List<Film> listOfFilmsReturnedByDb = filmsDao.getFilmsByTitle(searchTerm);
+		List<Film> listOfFilmsReturnedByDb = filmsDao.getFilmsByTitle(filmTitle);
 
 		if (listOfFilmsReturnedByDb.isEmpty()) {
-			return dataUtils.failedRequestError("No movie matches found for: " + searchTerm);
+			return dataUtils.failedRequestError("No movie matches found for: " + filmTitle);
 		}
 
 		Films filmsResult = new Films();
@@ -100,7 +100,7 @@ public class FilmsController implements FilmsControllerInterface {
 	}
 
 	@Override
-	public ResponseEntity<?> getFilmByAnyTerm(
+	public ResponseEntity<?> getFilmsByAnyTerm(
 			@RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType,
 			@PathVariable String searchTerm) {
 
@@ -132,7 +132,7 @@ public class FilmsController implements FilmsControllerInterface {
 		System.out.println(String.format("Request recieved to INSERT film with title: '%s' in format '%s'",
 				newFilm.getTitle(), contentType));
 
-		if (newFilm.isEmpty()) {
+		if (DataUtils.isFilmMissingData(newFilm)) {
 			return dataUtils.failedRequestError("Failed to insert movie as some fields are missing.");
 		}
 

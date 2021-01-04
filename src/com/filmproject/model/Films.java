@@ -7,32 +7,31 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(namespace = "coreservlets")
+@XmlRootElement(namespace = "filmproject")
 public class Films {
-	
-	@XmlElementWrapper(name = "filmList")
+
+    @XmlElementWrapper(name = "filmList")
     // XmlElement sets the name of the entities
     @XmlElement(name = "film")
-	private List<Film> filmList;
-	
-	public Films() {
-		
-	}
-	
-	public List<Film> getFilmList() {
-		return filmList;
-	}
-	
-	public void setFilmList(List<Film> filmList) {
-		this.filmList = filmList;
-	}
+    private List<Film> filmList;
 
-	@Override
-	public String toString() {
-		return "Films [filmList=" + filmList.toString() + "]";
-	}
-	
+    public Films() {
+
+    }
+
+    public List<Film> getFilmList() {
+	return filmList;
+    }
+
+    public void setFilmList(List<Film> filmList) {
+	this.filmList = filmList;
+    }
+
+    @Override
+    public String toString() {
+	return "Films [filmList=" + filmList.toString() + "]";
+    }
+
 }

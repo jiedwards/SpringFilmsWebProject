@@ -1,3 +1,12 @@
+// Disables form from being submitted with enter key
+$(document).on("keypress", 'form', function (e) {
+    var code = e.keyCode || e.which;
+    if (code == 13) {
+        e.preventDefault();
+        return false;
+    }
+});
+
 //More efficient to store the functions in a dictionary, as opposed to multiple if/else statements checking the data type.
 var dataTypeToParserDict = {
 	'application/xml': parseXmlAPIResponse,
@@ -12,7 +21,7 @@ function successfulAlertBox(message) {
 		text: "This will refresh the page and show the changes.",
 		confirmButtonText: "Great! Close this dialog.",
 	}).then(() => {
-		document.location.href = "/DynamicWebProjectMySQLFilmsEclipse";
+		document.location.href = "/FilmsProjectREST";
 	});
 }
 

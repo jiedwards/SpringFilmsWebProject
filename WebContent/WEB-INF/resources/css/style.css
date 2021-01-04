@@ -2,3 +2,7 @@ tr#movie-table-rows {
 	height: 25px; 
 	width: 10px;
 }
+
+img#headerImage {
+	border-radius: 15%;
+}
