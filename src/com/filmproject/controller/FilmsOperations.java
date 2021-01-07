@@ -10,7 +10,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.filmproject.model.Film;
 
-public interface FilmsControllerInterface {
+/**
+ * This FilmsOperations interface provides a flexible design and API to implement,
+ * it's also used to promote the Separation of Logic principle. Interface driven 
+ * controllers ensures that the client remains completely in dark about how 
+ * the data operations are executed.
+ * 
+ * Hover over the @RequestMapping annotation to find out more information.
+ * 
+ * @author jacobedwards
+ *
+ */
+
+public interface FilmsOperations {  
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String homePage();

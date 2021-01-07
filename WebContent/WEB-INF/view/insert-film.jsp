@@ -75,7 +75,7 @@
 			<button type="submit" class="btn btn-primary btn-lg btn-block">Finish
 				inserting movie data</button>
 
-			<a href="/DynamicWebProjectMySQLFilmsEclipse" class="btn btn-success btn-lg btn-block">Return to all Films
+			<a href="/FilmsProjectREST" class="btn btn-success btn-lg btn-block">Return to all Films
 				page</a> <br>
 		</form>
 

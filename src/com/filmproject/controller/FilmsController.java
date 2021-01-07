@@ -14,205 +14,254 @@ import com.filmproject.model.Film;
 import com.filmproject.model.Films;
 import com.filmproject.utils.DataUtils;
 
+/**
+ * 
+ * The Content-Type header is expected for many of the methods below, however
+ * JSON is chosen as default if it is not supplied.
+ * 
+ * @author jacobedwards
+ *
+ */
 @Controller
-public class FilmsController implements FilmsControllerInterface {
-	FilmsDAO filmsDao = new FilmsHibernateDAOImpl();
-	DataUtils dataUtils = new DataUtils();
+public class FilmsController implements FilmsOperations {
+    FilmsDAO filmsDao = FilmsHibernateDAOImpl.getInstance();
+    DataUtils dataUtils = new DataUtils();
 
-	@Override
-	public String homePage() {
-		return "get-films";
+    @Override
+    public String homePage() {
+	return "get-films";
+    }
+
+    @Override
+    public String insertFilmPage() {
+	return "insert-film";
+    }
+
+    /**
+     * The getAllFilms method below attempts to retrieve all movies which exist in
+     * the database.
+     */
+
+    @Override
+    public ResponseEntity<?> getAllFilms(
+	    @RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType) {
+
+	List<Film> listOfFilmsReturnedByDb = filmsDao.getAllFilms();
+
+	System.out.println("--------------------");
+	System.out.println("Request received to retrieve all films in the database in '" + contentType + "'.");
+
+	if (listOfFilmsReturnedByDb.isEmpty()) {
+	    System.out.println("No movies found in the database.");
+	    return new ResponseEntity<String>("No movies found in the database.", HttpStatus.NO_CONTENT);
 	}
 
-	@Override
-	public String insertFilmPage() {
-		return "insert-film";
+	Films filmsResult = new Films();
+	filmsResult.setFilmList(listOfFilmsReturnedByDb);
+
+	return dataUtils.convertFilmsForClientContentType(contentType, listOfFilmsReturnedByDb, filmsResult);
+    }
+
+    /**
+     * The getFilmById method attempts to retrieve the data for a single movie when
+     * supplied with a valid film ID.
+     */
+
+    @Override
+    public ResponseEntity<?> getFilmById(
+	    @RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType,
+	    @PathVariable int filmId) {
+
+	System.out.println("--------------------");
+	System.out
+		.println(String.format("Request recieved to GET data by ID: '%d' in format '%s'", filmId, contentType));
+
+	Film film = filmsDao.getFilmById(filmId);
+
+	if (film == null) {
+	    return dataUtils.failedRequestError("No movie found for film ID: " + filmId);
 	}
 
-	@Override
-	public ResponseEntity<?> getAllFilms(
-			@RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType) {
+	System.out.println("Successfully found '" + film.getTitle() + "' to be returned to client.");
+	System.out.println("--------------------");
 
-		List<Film> listOfFilmsReturnedByDb = filmsDao.getAllFilms();
+	if (contentType.equalsIgnoreCase("text/plain")) {
+	    return new ResponseEntity<String>(film.toString(), HttpStatus.OK);
+	} else {
+	    return new ResponseEntity<Film>(film, HttpStatus.OK);
+	}
+    }
 
-		System.out.println("--------------------");
-		System.out.println("Request received to retrieve all films in the database in '" + contentType + "'.");
+    /**
+     * The getFilmsByTitle method attempts to retrieve the data for movies which
+     * match the supplied film title if valid.
+     */
+    @Override
+    public ResponseEntity<?> getFilmsByTitle(
+	    @RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType,
+	    @PathVariable String filmTitle) {
 
-		if (listOfFilmsReturnedByDb.isEmpty()) {
-			System.out.println("No movies found in the database.");
-			return new ResponseEntity<String>("No movies found in the database.", HttpStatus.NO_CONTENT);
-		}
+	System.out.println("--------------------");
+	System.out.println(
+		String.format("Request recieved to GET data by title: '%s' in format '%s'", filmTitle, contentType));
 
-		Films filmsResult = new Films();
-		filmsResult.setFilmList(listOfFilmsReturnedByDb);
-
-		return dataUtils.convertFilmsForClientContentType(contentType, listOfFilmsReturnedByDb, filmsResult);
+	if (filmTitle.isEmpty()) {
+	    return dataUtils.failedRequestError("No movie found due invalid film title: " + filmTitle);
 	}
 
-	@Override
-	public ResponseEntity<?> getFilmById(
-			@RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType,
-			@PathVariable int filmId) {
+	List<Film> listOfFilmsReturnedByDb = filmsDao.getFilmsByTitle(filmTitle);
 
-		System.out.println("--------------------");
-		System.out
-				.println(String.format("Request recieved to GET data by ID: '%d' in format '%s'", filmId, contentType));
-
-		Film film = filmsDao.getFilmById(filmId);
-
-		if (film == null) {
-			return dataUtils.failedRequestError("No movie found for film ID: " + filmId);
-		}
-
-		System.out.println("Successfully found '" + film.getTitle() + "' to be returned to client.");
-		System.out.println("--------------------");
-
-		if (contentType.equalsIgnoreCase("text/plain")) {
-			return new ResponseEntity<String>(film.toString(), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<Film>(film, HttpStatus.OK);
-		}
+	if (listOfFilmsReturnedByDb.isEmpty()) {
+	    return dataUtils.failedRequestError("No movie matches found for: " + filmTitle);
 	}
 
-	@Override
-	public ResponseEntity<?> getFilmsByTitle(
-			@RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType,
-			@PathVariable String filmTitle) {
+	Films filmsResult = new Films();
+	filmsResult.setFilmList(listOfFilmsReturnedByDb);
 
-		System.out.println("--------------------");
-		System.out.println(
-				String.format("Request recieved to GET data by title: '%s' in format '%s'", filmTitle, contentType));
+	return dataUtils.convertFilmsForClientContentType(contentType, listOfFilmsReturnedByDb, filmsResult);
+    }
 
-		if (filmTitle.isEmpty()) {
-			return dataUtils.failedRequestError("No movie found due invalid film title: " + filmTitle);
-		}
+    /**
+     * The getFilmsByAnyTerm method attempts to retrieve the data for movies which
+     * match the supplied search term if valid.
+     */
 
-		List<Film> listOfFilmsReturnedByDb = filmsDao.getFilmsByTitle(filmTitle);
+    @Override
+    public ResponseEntity<?> getFilmsByAnyTerm(
+	    @RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType,
+	    @PathVariable String searchTerm) {
 
-		if (listOfFilmsReturnedByDb.isEmpty()) {
-			return dataUtils.failedRequestError("No movie matches found for: " + filmTitle);
-		}
+	System.out.println("--------------------");
+	System.out.println(String.format("Request recieved to GET data by search term: '%s' in format '%s'", searchTerm,
+		contentType));
 
-		Films filmsResult = new Films();
-		filmsResult.setFilmList(listOfFilmsReturnedByDb);
-
-		return dataUtils.convertFilmsForClientContentType(contentType, listOfFilmsReturnedByDb, filmsResult);
+	if (searchTerm.isEmpty()) {
+	    return dataUtils.failedRequestError("No movie found due invalid search term: " + searchTerm);
 	}
 
-	@Override
-	public ResponseEntity<?> getFilmsByAnyTerm(
-			@RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType,
-			@PathVariable String searchTerm) {
+	List<Film> listOfFilmsReturnedByDb = filmsDao.getFilmsByAnyTerm(searchTerm);
 
-		System.out.println("--------------------");
-		System.out.println(String.format("Request recieved to GET data by search term: '%s' in format '%s'", searchTerm,
-				contentType));
-
-		if (searchTerm.isEmpty()) {
-			return dataUtils.failedRequestError("No movie found due invalid search term: " + searchTerm);
-		}
-
-		List<Film> listOfFilmsReturnedByDb = filmsDao.getFilmsByAnyTerm(searchTerm);
-
-		if (listOfFilmsReturnedByDb.isEmpty()) {
-			return dataUtils.failedRequestError("No movie matches found for: " + searchTerm);
-		}
-
-		Films filmsResult = new Films();
-		filmsResult.setFilmList(listOfFilmsReturnedByDb);
-
-		return dataUtils.convertFilmsForClientContentType(contentType, listOfFilmsReturnedByDb, filmsResult);
+	if (listOfFilmsReturnedByDb.isEmpty()) {
+	    return dataUtils.failedRequestError("No movie matches found for: " + searchTerm);
 	}
 
-	@Override
-	public ResponseEntity<?> insertFilm(
-			@RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType,
-			@RequestBody Film newFilm) {
-		System.out.println("--------------------");
-		System.out.println(String.format("Request recieved to INSERT film with title: '%s' in format '%s'",
-				newFilm.getTitle(), contentType));
+	Films filmsResult = new Films();
+	filmsResult.setFilmList(listOfFilmsReturnedByDb);
 
-		if (DataUtils.isFilmMissingData(newFilm)) {
-			return dataUtils.failedRequestError("Failed to insert movie as some fields are missing.");
-		}
+	return dataUtils.convertFilmsForClientContentType(contentType, listOfFilmsReturnedByDb, filmsResult);
+    }
 
-		try {
-			filmsDao.insertFilm(newFilm);
-		} catch (Exception e) {
-			return dataUtils.failedRequestError("Failed to insert movie with title: " + newFilm.getTitle());
-		}
+    /**
+     * The insertFilm method attempts to insert a movie into the database when
+     * supplied with a valid film object in the request body.
+     */
 
-		String resultMessage = "Successfully inserted movie with title: " + newFilm.getTitle();
-		System.out.println("--------------------");
-		System.out.println(resultMessage);
-		return new ResponseEntity<String>(resultMessage, HttpStatus.OK);
+    @Override
+    public ResponseEntity<?> insertFilm(
+	    @RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType,
+	    @RequestBody Film newFilm) {
+	System.out.println("--------------------");
+	System.out.println(String.format("Request recieved to INSERT film with title: '%s' in format '%s'",
+		newFilm.getTitle(), contentType));
+
+	if (DataUtils.isFilmMissingData(newFilm)) {
+	    return dataUtils.failedRequestError("Failed to insert movie as some fields are missing.");
 	}
 
-	@Override
-	public ResponseEntity<?> updateFilm(
-			@RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType,
-			@PathVariable int filmId, @RequestBody Film updatedFilm) {
-
-		System.out.println("--------------------");
-		System.out.println(
-				String.format("Request recieved to UPDATE film with ID: '%d' in format '%s'", filmId, contentType));
-
-		// Method is created to avoid an ambiguous exception being thrown when the movie isn't identified in the try/catch
-		if (!filmExistsInDatabase(filmId)) {
-			return dataUtils.failedRequestError("No movie found with Film ID: " + filmId);
-		}
-
-		String resultMessage = "";
-
-		try {
-			filmsDao.updateFilm(filmId, updatedFilm);
-		} catch (Exception e) {
-			resultMessage = String.format("Failed to update movie with ID: '%d'. Make sure the movie exists.", filmId);
-			e.printStackTrace();
-			return dataUtils.failedRequestError(resultMessage);
-		}
-
-		resultMessage = "Successfully updated movie with ID: " + filmId;
-		System.out.println("--------------------");
-		System.out.println(resultMessage);
-		return new ResponseEntity<String>(resultMessage, HttpStatus.OK);
+	try {
+	    filmsDao.insertFilm(newFilm);
+	} catch (Exception e) {
+	    return dataUtils.failedRequestError("Failed to insert movie with title: " + newFilm.getTitle());
 	}
 
-	@Override
-	public ResponseEntity<?> deleteFilmById(@PathVariable int filmId) {
+	String resultMessage = "Successfully inserted movie with title: " + newFilm.getTitle();
+	System.out.println("--------------------");
+	System.out.println(resultMessage);
+	return new ResponseEntity<String>(resultMessage, HttpStatus.OK);
+    }
 
-		System.out.println("--------------------");
-		System.out.println("Request recieved to delete film with ID: " + filmId);
+    /**
+     * The updateFilm method attempts to update a movie in the database when
+     * supplied with a valid filmId path variable and a film object in the request
+     * body.
+     */
 
-		String resultMessage = "";
+    @Override
+    public ResponseEntity<?> updateFilm(
+	    @RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType,
+	    @PathVariable int filmId, @RequestBody Film updatedFilm) {
 
-//		Method is created to avoid an ambiguous exception being thrown when the movie isn't identified in the try/catch
-		if (!filmExistsInDatabase(filmId)) {
-			return dataUtils.failedRequestError("No movie found with Film ID: " + filmId);
-		}
+	System.out.println("--------------------");
+	System.out.println(
+		String.format("Request recieved to UPDATE film with ID: '%d' in format '%s'", filmId, contentType));
 
-		try {
-			filmsDao.deleteFilm(filmId);
-		} catch (Exception e) {
-			resultMessage = String.format("Failed to delete movie with ID: %d. Make sure the movie exists.", filmId);
-			e.printStackTrace();
-			return dataUtils.failedRequestError(resultMessage);
-		}
-
-		resultMessage = "Successfully deleted movie with ID: " + filmId;
-		System.out.println(resultMessage);
-		System.out.println("--------------------");
-		return new ResponseEntity<String>(resultMessage, HttpStatus.OK);
+	if (!filmExistsInDatabase(filmId)) {
+	    return dataUtils.failedRequestError("No movie found with Film ID: " + filmId);
 	}
 
-	private boolean filmExistsInDatabase(int filmId) {
+	String resultMessage = "";
 
-		System.out.println("Verifying whether film with ID: " + filmId + " exists in database.");
-		Film film = filmsDao.getFilmById(filmId);
-
-		if (film == null) {
-			return false;
-		}
-		return true;
+	try {
+	    filmsDao.updateFilm(filmId, updatedFilm);
+	} catch (Exception e) {
+	    resultMessage = String.format("Failed to update movie with ID: '%d'. Make sure the movie exists.", filmId);
+	    e.printStackTrace();
+	    return dataUtils.failedRequestError(resultMessage);
 	}
+
+	resultMessage = "Successfully updated movie with ID: " + filmId;
+	System.out.println("--------------------");
+	System.out.println(resultMessage);
+	return new ResponseEntity<String>(resultMessage, HttpStatus.OK);
+    }
+
+    /**
+     * The deleteFilmById method attempts to delete a movie when supplied with a
+     * valid film ID.
+     */
+
+    @Override
+    public ResponseEntity<?> deleteFilmById(@PathVariable int filmId) {
+
+	System.out.println("--------------------");
+	System.out.println("Request recieved to delete film with ID: " + filmId);
+
+	String resultMessage = "";
+
+	if (!filmExistsInDatabase(filmId)) {
+	    return dataUtils.failedRequestError("No movie found with Film ID: " + filmId);
+	}
+
+	try {
+	    filmsDao.deleteFilm(filmId);
+	} catch (Exception e) {
+	    resultMessage = String.format("Failed to delete movie with ID: %d. Make sure the movie exists.", filmId);
+	    e.printStackTrace();
+	    return dataUtils.failedRequestError(resultMessage);
+	}
+
+	resultMessage = "Successfully deleted movie with ID: " + filmId;
+	System.out.println(resultMessage);
+	System.out.println("--------------------");
+	return new ResponseEntity<String>(resultMessage, HttpStatus.OK);
+    }
+
+    /**
+     * The filmExistsInDatabase method is created to avoid an ambiguous exception
+     * being thrown when the movie isn't identified in the try/catch of the main
+     * methods.
+     * 
+     * @param filmId
+     * @return
+     */
+    private boolean filmExistsInDatabase(int filmId) {
+
+	System.out.println("Verifying whether film with ID: " + filmId + " exists in database.");
+	Film film = filmsDao.getFilmById(filmId);
+
+	if (film == null) {
+	    return false;
+	}
+	return true;
+    }
 }

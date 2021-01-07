@@ -30,6 +30,7 @@
 <body class="bg-light" onload="getRequestHandler('films', 'application/json')">
 
 
+	<!-- Header container for Movie Header and image -->
 	<div class="container mb-2 bg-light text-dark">
 
 		<a href="./"> <img id="headerImage" class="mx-auto d-block" src="./resources/images/movie-reel.jpg" alt="Movie Reel" width="40%">
@@ -39,6 +40,7 @@
 
 	</div>
 
+	<!-- Search box container -->
 	<div class="container-fluid mb-2 bg-light text-dark">
 
 		<form method="GET" action="#">
@@ -76,6 +78,8 @@
 			movie </a> <br> <br>
 	</div>
 
+
+	<!-- Movie table container - Used for Bootstrap's fluid property which allows for dynamic resizing. -->
 	<div class="container-fluid">
 
 		<table id="moviesTable" class="table table-hover table-responsive table-sm mb-2" width="100%">
@@ -84,6 +88,7 @@
 
 	</div>
 
+	<!-- Update Film Modal -->
 	<div class="modal fade" id="updateFilmModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
 		aria-hidden="true">
 		<div class="modal-dialog modal-lg">
